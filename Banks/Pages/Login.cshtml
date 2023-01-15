@@ -1,0 +1,46 @@
+﻿@page
+@model Banks.Pages.Login
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ورود</title>
+    <link rel="shortcut icon" href="~/lib/bootstrap/assets/media/image/favicon.png">
+    <meta name="theme-color" content="#5867dd">
+    <link rel="stylesheet" href="~/lib/bootstrap/vendors/bundle.css" type="text/css">
+    <link rel="stylesheet" href="~/lib/bootstrap/assets/css/app.css" type="text/css">
+</head>
+
+<body class="form-membership">
+<div class="page-loader">
+    <div class="spinner-border"></div>
+</div>
+
+<div class="form-wrapper">
+    <div class="logo">
+        <img src="~/lib/bootstrap/assets/icons/logo.jpg" class="img-fluid" alt="image" style="max-height:4rem;">
+    </div>
+    <h5>ورود</h5>
+    <form method="post">
+        <div class="form-group">
+            <input type="text" class="form-control text-left" id="username" name="username" placeholder="نام کاربری یا ایمیل" dir="ltr" required autofocus>
+        </div>
+        <div class="form-group">
+            <input type="password" class="form-control text-left" name="password" id="password" placeholder="رمز عبور" dir="ltr" required>
+        </div>
+        <div class="form-group d-sm-flex justify-content-between text-left mb-4">
+            <a class="d-block mt-2 mt-sm-0 line-height-28" href="recover-password.html">بازنشانی رمز عبور</a>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">ورود</button>
+    </form>
+</div>
+<script src="~/lib/bootstrap/vendors/bundle.js"></script>
+<script src="~/lib/bootstrap/assets/js/app.js"></script>
+</body>
+</html>

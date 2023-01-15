@@ -1,0 +1,41 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="articles and journals info">
+    <meta name="author" content="Jiro Team (Sanaan Marabi)">
+    <title>Journal Bank</title>
+
+    <link rel="stylesheet" href="~/lib/RTLBootstrap/vendors/bundle.css" type="text/css">
+    <link rel="stylesheet" href="~/lib/RTLBootstrap/vendors/slick/slick.css">
+    <link rel="stylesheet" href="~/lib/RTLBootstrap/vendors/slick/slick-theme.css">
+    <link rel="stylesheet" href="~/lib/RTLBootstrap/vendors/vmap/jqvmap.min.css">
+    <link rel="stylesheet" href="~/lib/RTLBootstrap/assets/css/app.css" type="text/css">
+        <style>
+            .custom-logo{
+                max-height: 7rem;
+                max-width: 7rem;
+            }
+        </style>
+</head>
+<body class="bg-light">
+
+    <main style="overflow:hidden;">
+        <div class="container my-0 py-0">
+            @RenderBody()
+        </div>
+    </main>
+
+    <script src="~/lib/RTLBootstrap/vendors/bundle.js"></script>
+    <script src="~/lib/RTLBootstrap/vendors/charts/peity/jquery.peity.min.js"></script>
+    <script src="~/lib/RTLBootstrap/assets/js/examples/charts/peity.js"></script>
+    <script src="~/lib/RTLBootstrap/vendors/datepicker/daterangepicker.js"></script>
+    <script src="~/lib/RTLBootstrap/vendors/slick/slick.min.js"></script>
+    <script src="~/lib/RTLBootstrap/vendors/vmap/jquery.vmap.min.js"></script>
+    <script src="~/lib/RTLBootstrap/vendors/vmap/maps/jquery.vmap.usa.js"></script>
+    <script src="~/lib/RTLBootstrap/assets/js/examples/vmap.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

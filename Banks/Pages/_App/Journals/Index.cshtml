@@ -1,0 +1,122 @@
+﻿@page
+@model Banks.Pages._App.Journals.Index
+@using Web
+@using Entities
+
+<div class="row py-5">
+    <div class="col-12 px-3 my-2">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 text-left">
+                        <a class="btn btn-gradient-primary mb-1" asp-page="@PageUrl.AddJournal">
+                            @Glossary.AddJournal
+                        </a>
+
+                        <a class="btn btn-gradient-primary mb-1" asp-page="@PageUrl.ReadFromExcel">
+                            @Glossary.ReadFromExcel
+                        </a>
+
+                        <a class="btn btn-gradient-primary mb-1" asp-page="@PageUrl.ReadExcelCloritive">
+                            @Glossary.ReadExcelCloritive
+                        </a>
+
+                        <a class="btn btn-gradient-primary mb-1" asp-page="@PageUrl.UpdateIF2">
+                            @Glossary.UpdateIF
+                        </a>
+                        
+                        <a class="btn btn-gradient-primary mb-1" asp-page="@PageUrl.UpdateISC">
+                            @Glossary.UpdateISC
+                        </a>
+                        
+                        <a class="btn btn-gradient-primary mb-1" asp-page="@PageUrl.UpdateMIF">
+                            @Glossary.UpdateMIF
+                        </a>
+                        
+                        <a class="btn btn-gradient-primary mb-1" asp-page="@PageUrl.SearchJournals">
+                            @Glossary.Search
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12 col-sm-12 mb-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <form method="post">
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6 offset-lg-3 mb-4">
+
+                            <div class="form-group mb-2">
+                                <label asp-for="@Model.SearchModel.Title" class="text-right"></label>
+                                <input type="text" asp-for="@Model.SearchModel.Title" class="form-control text-left" dir="ltr">
+                                <span class="text-danger" asp-validation-for="@Model.SearchModel.Title"></span>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label asp-for="@Model.SearchModel.Year" class="text-center"></label>
+                                <input type="number" min="2010" max="2035" asp-for="@Model.SearchModel.Year" class="form-control text-center" dir="ltr">
+                                <span class="text-danger" asp-validation-for="@Model.SearchModel.Year"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="@Model.SearchModel.Index" class="form-label"></label><br>
+                                <select asp-for="@Model.SearchModel.Index" tabindex="-1" class="js-example-basic-single select2-hidden-accessible">
+                                    <option selected="selected">انتخاب</option>
+                                    @foreach (var item in Model.Indexes)
+                                    {
+                                        <option value="@item.Value">@item.Key</option>
+                                    }
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary px-5">جستجو</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12 col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <table id="example1" class="table table-striped table-bordered" width="100%">
+                    <thead>
+                    <tr>
+                        <th>شناسه</th>
+                        <th>عنوان</th>
+                        <th>وب سایت</th>
+                        <th>ناشر</th>
+                        <th>کشور</th>
+                        <th>-</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @if (Model.JournalList.Any())
+                    {
+                        foreach (var journal in Model.JournalList)
+                        {
+                            <tr>
+                                <td>@journal.Id</td>
+                                <td>@journal.Title</td>
+                                <td>@journal.Website</td>
+                                <td>@journal.Publisher</td>
+                                <td>@journal.Country</td>
+                                <td>
+                                    <a class="btn btn-gradient-primary btn-rounded btn-sm mx-1" asp-page="@PageUrl.JournalsRecords" asp-route-id="@journal.Id">
+                                        مشاهده
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,44 @@
+﻿@page
+@model JournalBank.Pages._App.Users.Create
+@{
+}
+
+<form method="post">
+    <div class="col-12 text-center py-3">
+        <h3 class="text-center"> ثبت کاربر جدید : </h3>
+    </div>
+    
+    <div class="form-group mb-3">
+        <label asp-for="@Model.UserModel.Title" class="text-right"></label>
+        <input type="text" asp-for="@Model.UserModel.Title" class="form-control text-left" dir="ltr">
+        <span class="text-danger" asp-validation-for="@Model.UserModel.Title"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="@Model.UserModel.UserName" class="text-right"></label>
+        <input type="text" asp-for="@Model.UserModel.UserName" class="form-control text-left" dir="ltr">
+        <span class="text-danger" asp-validation-for="@Model.UserModel.UserName"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="@Model.UserModel.Password" class="text-right"></label>
+        <input type="password" asp-for="@Model.UserModel.Password" class="form-control text-left" dir="ltr">
+        <span class="text-danger" asp-validation-for="@Model.UserModel.Password"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="@Model.UserModel.Enabled" class="text-right"></label>
+        <input type="checkbox" asp-for="@Model.UserModel.Enabled" class="form-control text-left" dir="ltr">
+        <span class="text-danger" asp-validation-for="@Model.UserModel.Enabled"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="@Model.UserModel.SysAdmin" class="text-right"></label>
+        <input type="checkbox" asp-for="@Model.UserModel.SysAdmin" class="form-control text-left" dir="ltr">
+        <span class="text-danger" asp-validation-for="@Model.UserModel.SysAdmin"></span>
+    </div>
+
+    <div class="col-12">
+        <button class="btn btn-primary w-100" type="submit">ثبت</button>
+    </div>
+</form>

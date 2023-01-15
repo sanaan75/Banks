@@ -1,0 +1,388 @@
+﻿@using Web
+@using UseCases
+@using Entities
+@using Entities.Permissions
+@inject ILogin Login
+@inject ICheckPermission CheckPermission
+@inject IMenuHelper menuHelper
+@inject IGetUser GetUser
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" id="html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>سامانه ... </title>
+    <link rel="shortcut icon" href="~/lib/bootstrap/assets/media/image/favicon.png">
+    <meta name="theme-color" content="#5867dd">
+    <link rel="stylesheet" href="~/lib/bootstrap/vendors/bundle.css" type="text/css">
+    <link rel="stylesheet" href="~/lib/bootstrap/vendors/datepicker/daterangepicker.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/vendors/slick/slick.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/vendors/slick/slick-theme.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/vendors/vmap/jqvmap.min.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/assets/css/app.css" type="text/css">
+    <link rel="stylesheet" href="~/lib/bootstrap/vendors/select2/css/select2.min.css" type="text/css">
+    <link rel="stylesheet" href="~/lib/bootstrap/vendors/clockpicker/bootstrap-clockpicker.min.css" type="text/css">
+    <link rel="stylesheet" href="~/lib/bootstrap/vendors/datepicker-jalali/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/vendors/datepicker/daterangepicker.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/vendors/dataTable/responsive.bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="~/lib/bootstrap/vendors/tour/css/tour.min.css" type="text/css">
+    <link rel="stylesheet" href="~/lib/bootstrap/vendors/tagsinput/bootstrap-tagsinput.css" type="text/css">
+    <link rel="stylesheet" href="~/lib/bootstrap/vendors/range-slider/css/ion.rangeSlider.min.css" type="text/css">
+    <link rel="stylesheet" href="~/lib/bootstrap/all.min.css" type="text/css">
+
+    <style>
+        .logout-icon:hover {
+            color: white !important;
+        }
+        
+        .navigation .navigation-icon-menu{
+        margin: 10px;
+        border-radius: 10px;
+        }
+        
+        .navigation .navigation-icon-menu ul li.active a:before{
+            display: none;
+        }
+        
+        .navigation .navigation-icon-menu ul li a{
+            padding: 0.5rem;
+            display: inline-block;
+            width: initial;
+            color: white;
+        }
+        .navigation{
+            margin-bottom: 0px;
+            padding-bottom: 20px;
+        }
+        .navigation-icon-menu{
+        width: initial !important;
+        }
+        
+        .navigation-icon-menu {
+            margin-top: 1rem;
+        }
+        
+        .navigation-menu-body {
+            margin-top: 1rem;
+        }
+        .breadcrumb-item+.breadcrumb-item::before{
+            color: white;
+        }
+        
+        .header .header-logo{
+                 border-radius: 0px 0px 10px 0px;
+        }
+        
+        .header .header-body{
+            border-radius: 0px 0px 0px 10px;
+        }
+        
+        .navigation>.navigation-menu-body>ul li{
+            margin: 10px 0px;
+        }
+        .navigation>.navigation-menu-body>ul li.navigation-divider{
+            padding: 0px;
+        }
+        
+        .btn.btn-outline-primary{
+            background-color: #eeeeee;
+            color: #444444;
+            border-color: #444444 ;
+        }
+        
+                .btn.btn-outline-primary:hover{
+                    background-color: #007bff;
+                    color: #ffffff;
+                }
+                
+                .dataTables_wrapper .dataTables_filter {
+justify-content: flex-start;
+}
+
+.dataTables_filter label {
+    width: 100%;
+}
+    </style>
+</head>
+
+<body class="" id="body" onload="openFullscreen()">
+@{
+    var actor = new Actor();
+    try
+    {
+        actor = Context.Session.GetActor();
+    }
+    catch (Exception ex)
+    {
+    }
+
+    <div class="navigation">
+        <div class="navigation-icon-menu">
+
+            <ul>
+                <li data-toggle="tooltip" title="@Glossary.Home">
+                    <a href="#Home" title="@Glossary.Home">
+                        <i class="fa-solid text-white fa-home"></i>
+                        <span class="mx-1 font-size-13">صفحه نخست</span>
+                    </a>
+                </li>
+                @if (CheckPermission.Respond(actor.Permissions, Permission.Users))
+                {
+                    <li data-toggle="tooltip" title="@Glossary.Users">
+                        <a href="#Users" title="@Glossary.Users">
+                            <i class="fa-solid text-white fa-people-group"></i>
+                            <span class="mx-1 font-size-13">اشخاص</span>
+                        </a>
+                    </li>
+                }
+
+                @if (CheckPermission.Respond(actor.Permissions, Permission.Journals))
+                {
+                    <li data-toggle="tooltip" title="@Glossary.Journals">
+                        <a href="#Journals" title="@Glossary.Journals">
+                            <i class="fa-solid text-white fa-puzzle-piece"></i>
+                            <span class="mx-1 font-size-13">مجلات</span>
+                        </a>
+                    </li>
+                }
+
+                @if (CheckPermission.Respond(actor.Permissions, Permission.Reports))
+                {
+                    <li data-toggle="tooltip" title="@Glossary.Reports">
+                        <a href="#Reports" title="@Glossary.Reports">
+                            <i class="fa-solid text-white fa-puzzle-piece"></i>
+                            <span class="mx-1 font-size-13">@Glossary.Reports</span>
+                        </a>
+                    </li>
+                }
+
+                @if (CheckPermission.Respond(actor.Permissions, Permission.Permissions))
+                {
+                    <li data-toggle="tooltip" title="@Glossary.Permissions">
+                        <a href="#Permissions" title="@Glossary.Permissions">
+                            <i class="fa-solid text-white fa-puzzle-piece"></i>
+                            <span class="mx-1 font-size-13">@Glossary.Permissions</span>
+                        </a>
+                    </li>
+                }
+
+            </ul>
+
+        </div>
+
+        <div class="navigation-menu-body">
+
+            <ul class="@{@Html.Raw(menuHelper.Respond(Menu.Home))}" id="Home">
+                <li class="navigation-divider">
+                    <h5>
+                        <a href="@PageUrl.Home">@Glossary.Home</a>
+                    </h5>
+                </li>
+                <li>
+                    <a asp-page="@PageUrl.Home">@Glossary.Home</a>
+                </li>
+            </ul>
+
+            <ul class="@{@Html.Raw(menuHelper.Respond(Menu.Users))}" id="Users">
+                <li class="navigation-divider">
+                    <h5>@Glossary.Users</h5>
+                </li>
+                <li>
+                    <a asp-page="@PageUrl.ListUsers">@Glossary.List</a>
+                </li>
+                <li class="navigation-divider">
+                    <h5>@Glossary.Permissions</h5>
+                </li>
+            </ul>
+
+            <ul class="@{@Html.Raw(menuHelper.Respond(Menu.Journal))}" id="Journals">
+                <li class="navigation-divider">
+                    <h5>@Glossary.Journals</h5>
+                </li>
+                <li>
+                    <a asp-page="@PageUrl.ListJournals">@Glossary.List</a>
+                </li>
+            </ul>
+
+            <ul class="@{@Html.Raw(menuHelper.Respond(Menu.Reports))}" id="Reports">
+                <li class="navigation-divider">
+                    <h5>@Glossary.Reports</h5>
+                </li>
+                @* <li> *@
+                @*     <a asp-page="@PageUrl.ListServices">لیست سرویس ها</a> *@
+                @* </li> *@
+            </ul>
+
+            <ul class="@{@Html.Raw(menuHelper.Respond(Menu.Permissions))}" id="Permissions">
+                <li class="navigation-divider">
+                    <h5>@Glossary.Permissions</h5>
+                </li>
+                <li>
+                    <a asp-page="@PageUrl.AddUserGroup">ایجاد گروه کاربری</a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+    <div class="header">
+        <div class="header-logo text-right" style="padding:9px; background:  #5867dd">
+            <div style="width:100%; padding: 0.5rem;border-radius: 10px;" class="d-flex justify-content-start align-items-center">
+                @{
+                    var user = GetUser.Get(actor.UserId);
+
+                    <img src="@user.Picture" class="img-fluid mr-2 circle" style="height: 3.5rem;width: 3.5rem;border-radius:5px;">
+
+                    <span class="text-white mx-2 font-size-16">
+                        @user.Name
+                    </span>
+                }
+            </div>
+
+        </div>
+        <div class="header-body" style="background-color: #5867dd">
+
+            <div class="header-body-left">
+
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb text-white">
+                        @foreach (var item in menuHelper.GetBreadcrumb())
+                        {
+                            <li class="breadcrumb-item text-white">
+                                <a href="@item.URL" class="mx-1 text-white">
+                                    @Html.Raw(item.Title)
+                                </a>
+                            </li>
+                        }
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="header-body-right text-white">
+                <ul class="navbar-nav">
+                    <li class="mx-2">
+                        <span class="text-white text-right font-size-16" id="clock" onload="currentTime()">
+
+                        </span>
+                    </li>
+                    <li class="mx-2">
+                        <a class="btn btn-gradient-info btn-floating" onclick="openFullscreen()">
+                            <i class="icon ti-fullscreen"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="@PageUrl.Logout" class="btn btn-gradient-danger btn-floating">
+                            <i class="icon ti-power-off"></i>
+                        </a>
+                    </li>
+
+                </ul>
+
+                <div class="d-flex align-items-center">
+                    <div class="d-xl-none d-lg-none d-sm-block navigation-toggler">
+                        <a href="#">
+                            <i class="ti-menu"></i>
+                        </a>
+                    </div>
+                    <div class="d-xl-none d-lg-none d-sm-block navbar-toggler">
+                        <a href="#">
+                            <i class="ti-arrow-down"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <main class="main-content mt-2">
+
+        @RenderBody()
+
+    </main>
+}
+<!-- ---------------------------  scripts --------------------------- -->
+<script src="~/lib/bootstrap/vendors/bundle.js"></script>
+<script src="~/lib/bootstrap/vendors/charts/chartjs/chart.min.js"></script>
+<script src="~/lib/bootstrap/vendors/circle-progress/circle-progress.min.js"></script>
+<script src="~/lib/bootstrap/vendors/charts/peity/jquery.peity.min.js"></script>
+<script src="~/lib/bootstrap/assets/js/examples/charts/peity.js"></script>
+<script src="~/lib/bootstrap/vendors/datepicker/daterangepicker.js"></script>
+<script src="~/lib/bootstrap/vendors/slick/slick.min.js"></script>
+<script src="~/lib/bootstrap/vendors/vmap/jquery.vmap.min.js"></script>
+<script src="~/lib/bootstrap/vendors/vmap/maps/jquery.vmap.usa.js"></script>
+<script src="~/lib/bootstrap/assets/js/examples/vmap.js"></script>
+<script src="~/lib/bootstrap/vendors/clockpicker/bootstrap-clockpicker.min.js"></script>
+<script src="~/lib/bootstrap/assets/js/examples/clockpicker.js"></script>
+<script src="~/lib/bootstrap/vendors/select2/js/select2.min.js"></script>
+<script src="~/lib/bootstrap/assets/js/examples/select2.js"></script>
+<script src="~/lib/bootstrap/vendors/datepicker-jalali/bootstrap-datepicker.min.js"></script>
+<script src="~/lib/bootstrap/vendors/datepicker-jalali/bootstrap-datepicker.fa.min.js"></script>
+<script src="~/lib/bootstrap/vendors/datepicker/daterangepicker.js"></script>
+<script src="~/lib/bootstrap/assets/js/examples/datepicker.js"></script>
+<script src="~/lib/bootstrap/vendors/dataTable/jquery.dataTables.min.js"></script>
+<script src="~/lib/bootstrap/vendors/dataTable/dataTables.bootstrap4.min.js"></script>
+<script src="~/lib/bootstrap/vendors/dataTable/dataTables.responsive.min.js"></script>
+<script src="~/lib/bootstrap/assets/js/examples/datatable.js"></script>
+<script src="~/lib/bootstrap/vendors/charts/justgage/raphael-2.1.4.min.js"></script>
+<script src="~/lib/bootstrap/vendors/charts/justgage/justgage.js"></script>
+<script src="~/lib/bootstrap/assets/js/examples/charts/justgage.js"></script>
+<script src="~/lib/bootstrap/vendors/charts/chartjs/chart.min.js"></script>
+<script src="~/lib/bootstrap/assets/js/examples/charts/chartjs.js"></script>
+<script src="~/lib/bootstrap/vendors/tour/js/tour.min.js"></script>
+<script src="~/lib/bootstrap/assets/js/examples/tour.js"></script>
+<script src="~/lib/bootstrap/vendors/tagsinput/bootstrap-tagsinput.js"></script>
+<script src="~/lib/bootstrap/assets/js/examples/tagsinput.js"></script>
+<script src="~/lib/bootstrap/vendors/range-slider/js/ion.rangeSlider.min.js"></script>
+<script src="~/lib/bootstrap/assets/js/examples/range-slider.js"></script>
+<!-- Dashboard scripts -->
+<script src="~/lib/bootstrap/assets/js/examples/dashboard.js"></script>
+<script src="~/lib/bootstrap/all.min.js"></script>
+<div class="colors">
+    <div class="bg-primary"></div>
+    <div class="bg-primary-bright"></div>
+    <div class="bg-secondary"></div>
+    <div class="bg-secondary-bright"></div>
+    <div class="bg-info"></div>
+    <div class="bg-info-bright"></div>
+    <div class="bg-success"></div>
+    <div class="bg-success-bright"></div>
+    <div class="bg-danger"></div>
+    <div class="bg-danger-bright"></div>
+    <div class="bg-warning"></div>
+    <div class="bg-warning-bright"></div>
+</div>
+<script src="~/lib/bootstrap/assets/js/app.js"></script>
+<script>
+
+function currentTime() {
+  let date = new Date(); 
+  let dateTime = new Date().toLocaleDateString('fa-IR-u-nu-latn');
+  let hh = date.getHours();
+  let mm = date.getMinutes();
+    
+   let time = dateTime + "  " + hh + ":" + mm;
+
+  document.getElementById("clock").innerText = time; 
+  let t = setTimeout(function(){ currentTime() }, 1000);
+}
+
+currentTime();
+
+        var elem = document.getElementById("html");
+         function openFullscreen() {
+            if (elem.requestFullscreen) {
+                return elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
+        }
+    </script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+@await RenderSectionAsync("Scripts", false)
+
+</body>
+</html>

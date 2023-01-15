@@ -1,0 +1,42 @@
+﻿@page
+@model JournalBank.Pages._App.Users.Index
+@using Entities;
+@{
+}
+<h1>Users</h1>
+<form method="post">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>@Glossary.Id</th>
+            <th>@Glossary.Username</th>
+            <th>@Glossary.Title</th>
+            <th>@Glossary.Admin</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @* @if (Model.userList.Any()) *@
+        @* { *@
+        @* foreach (var user in Model.userList) *@
+        @* { *@
+        @*     <tr> *@
+        @*         <td> @user.Id </td> *@
+        @*         <td>@user.Username</td> *@
+        @*         <td>@user.Title</td> *@
+        @*         <td>@user.SysAdmin</td> *@
+        @*         <td> *@
+        @*             <!-- <snippet_Edit> --> *@
+        @*             <a asp-page="./Edit" asp-route-id="@user.Id">Edit</a> | *@
+        @*             <!-- </snippet_Edit> --> *@
+        @*             <!-- <snippet_Delete> --> *@
+        @*             <button type="submit" asp-page-handler="delete" asp-route-id="@user.Id">delete</button> *@
+        @*             <!-- </snippet_Delete> --> *@
+        @*         </td> *@
+        @*     </tr> *@
+        @* } *@
+        @* } *@
+        </tbody>
+    </table>
+    <a asp-page="Create">Create New</a>
+</form>

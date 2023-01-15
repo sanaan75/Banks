@@ -1,0 +1,72 @@
+﻿@page
+@using Entities
+@model Banks.Pages._App.Index
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="col-12">
+                    @* @if (Model.Notes != null) *@
+                    @* { *@
+                    @*     @foreach (var note in Model.Notes) *@
+                    @*     { *@
+                    @*         <div class="alert alert-warning alert-with-border alert-dismissible" role="alert"> *@
+                    @*             <i class="ti-help-alt m-r-10"></i> *@
+                    @*             @note.text *@
+                    @*             <a class='btn btn-link mx-1' asp-page='@note.url'>کلیک کنید</a> *@
+                    @*             <button type="button" class="close" data-dismiss="alert" aria-label="بستن"> *@
+                    @*                 <i class="ti-close"></i> *@
+                    @*             </button> *@
+                    @*         </div> *@
+                    @*     } *@
+                    @* } *@
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-3 sol-sm-12">
+                        <div class="d-flex align-items-center mb-3">
+                            <div>
+                                <div class="icon-block icon-block-sm bg-dark icon-block-floating mr-2">
+                                    <i class="fa fa-journal-whills"></i>
+                                </div>
+                            </div>
+                            <span class="font-size-13">@Glossary.Journals</span>
+                            <h2 class="mb-0 ml-auto font-weight-bold text-dark primary-font line-height-30">
+                                @Model.journals
+                            </h2>
+                        </div>
+                        @* <div class="progress" style="height: 5px"> *@
+                        @*     <div class="progress-bar bg-dark" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div> *@
+                        @* </div> *@
+                    </div>
+
+                    <div class="col-md-3 sol-sm-12">
+                        <div class="d-flex align-items-center mb-3">
+                            <div>
+                                <div class="icon-block icon-block-sm bg-dark icon-block-floating mr-2">
+                                    <i class="fa fa-users"></i>
+                                </div>
+                            </div>
+                            <span class="font-size-13">@Glossary.Users</span>
+                            <h2 class="mb-0 ml-auto font-weight-bold text-dark primary-font line-height-30">
+                                @Model.users
+                            </h2>
+                        </div>
+                        @* <div class="progress" style="height: 5px"> *@
+                        @*     <div class="progress-bar bg-dark" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div> *@
+                        @* </div> *@
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
