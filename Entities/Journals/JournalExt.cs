@@ -17,6 +17,11 @@ namespace Entities.Journals
             return items;
         }
 
+        public static IQueryable<Journal> FilterByKey(this IQueryable<Journal> items, string key)
+        {
+            return items.Filter(key, i => i.Title.Trim().ToLower().Contains(key.Trim().ToLower()));
+        }
+        
         public static IQueryable<Journal> FilterByIssn(this IQueryable<Journal> items, string issn)
         {
             return items.Filter(issn, i => i.Issn == issn);
@@ -29,7 +34,7 @@ namespace Entities.Journals
 
         public static IQueryable<Journal> FilterByTitle(this IQueryable<Journal> items, string title)
         {
-            return items.Filter(title, i => i.Title.ToLower() == title.ToLower());
+            return items.Filter(title, i => i.Title.Trim().ToLower() == title.Trim().ToLower());
         }
 
         public static IQueryable<Journal> FilterByIndex(this IQueryable<Journal> items, JournalIndex? index)

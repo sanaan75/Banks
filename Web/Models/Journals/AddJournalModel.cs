@@ -2,7 +2,7 @@
 
 namespace Web.Models.Journals
 {
-    public class JournalModel
+    public class AddJournalModel
     {
         [Display(Name = "شناسه")] public int Id { get; set; }
 

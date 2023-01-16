@@ -2,7 +2,7 @@ using Entities.Journals;
 
 namespace Web.Models.Articles
 {
-    public class LastRecordModel
+    public class RecordModel
     {
         public string Category { get; set; }
         public double? IF { get; set; }

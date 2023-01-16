@@ -1,4 +1,7 @@
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
+using ClosedXML.Excel;
 using Framework;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
@@ -97,7 +100,8 @@ static void ApiCheck(IApplicationBuilder app)
             context.Request.Headers.TryGetValue("JiroToken", out headerValue);
 
             var headerValueResult = headerValue.FirstOrDefault();
-            const string Api_Key = "$JiroKey142857";
+            string Api_Key = "$Jiro" + DateTime.Now.Minute + DateTime.Now.Hour + "6342";
+
             if (headerValueResult == null || headerValueResult.Equals(Api_Key) == false)
             {
                 context.Response.StatusCode = 401;

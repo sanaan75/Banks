@@ -1,9 +1,8 @@
-﻿using Entities;
-using Entities.Journals;
+﻿using Entities.Journals;
 using Framework;
 using Microsoft.AspNetCore.Mvc;
 using UseCases.Journals;
-using Web.Models.Articles;
+using UseCases.ResultModels;
 using Web.Models.Journals;
 
 namespace JournalBank.Controllers
@@ -12,21 +11,107 @@ namespace JournalBank.Controllers
     [ApiController]
     public class JournalController : ControllerBase
     {
-        private readonly IFindJournal _findJournal;
         private readonly IUnitOfWork _unitOfWork;
 
-        public JournalController(IFindJournal findJournal, IUnitOfWork unitOfWork)
+        public JournalController( IUnitOfWork unitOfWork)
         {
-            _findJournal = findJournal;
             _unitOfWork = unitOfWork;
         }
 
-        // get by title
-        // filter by title
-        // get records
-        // get isc by year
-        // get jcr by year
+        [Route("GetByTitle")]
+        [HttpGet]
+        public IActionResult GetByTitle(string title)
+        {
+            try
+            {
+                var items = _unitOfWork.Journals.GetAll().FilterByTitle(title);
+                if (items.Any())
+                {
+                    var result = items.Select(i => new JournalModel
+                    {
+                        Title = i.Title,
+                        ISSN = i.Issn,
+                        Publisher = i.Publisher,
+                        EISSN = i.EIssn,
+                        Country = i.Country,
+                        WebSite = i.WebSite
+                    }).FirstOrDefault();
 
+                    return Ok(result);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        [Route("GetByTitleAndYear")]
+        [HttpGet]
+        public IActionResult GetByTitleAndYear(string title, int year)
+        {
+            try
+            {
+                var items = _unitOfWork.Journals.GetAll().FilterByTitle(title).FilterByYear(year);
+                if (items.Any())
+                {
+                    var result = items.Select(i => new JournalModel
+                    {
+                        Title = i.Title,
+                        ISSN = i.Issn,
+                        Publisher = i.Publisher,
+                        EISSN = i.EIssn,
+                        Country = i.Country,
+                        WebSite = i.WebSite
+                    }).ToList();
+
+                    return Ok(result);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        [Route("FilterByKey")]
+        [HttpGet]
+        public IActionResult FilterByKey(string key)
+        {
+            try
+            {
+                var items = _unitOfWork.Journals.GetAll().FilterByKey(key);
+                if (items.Any())
+                {
+                    var result = items.Select(i => new JournalModel
+                    {
+                        Title = i.Title,
+                        ISSN = i.Issn,
+                        Publisher = i.Publisher,
+                        EISSN = i.EIssn,
+                        Country = i.Country,
+                        WebSite = i.WebSite
+                    }).ToList();
+
+                    return Ok(result);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        //this is test api
         [Route("GetUsers")]
         [HttpGet]
         public IActionResult GetUsers()
@@ -42,78 +127,25 @@ namespace JournalBank.Controllers
             }
         }
 
-        [Route("GetRecords")]
-        [HttpGet]
-        public JsonResult GetRecords(RecordSearchModel searchModel)
-        {
-            var recordsList = _findJournal.Respond(new IFindJournal.Request
-            {
-                Year = searchModel.Year.Value,
-                Title = searchModel.Title,
-                Issn = searchModel.Issn,
-                Category = searchModel.Category
-            });
 
-            return new JsonResult(recordsList);
-        }
-
-        [Route("FindByTitle")]
+        [Route("GetISCList")]
         [HttpGet]
-        public IActionResult FindByTitle(string title, int year)
+        public IActionResult GetISCList(int year)
         {
             try
             {
-                var items = _unitOfWork.JournalRecords.GetAll().Where(i => i.Year < year).FilterByJournalTitle(title);
+                var items = _unitOfWork.JournalRecords.GetAll().FilterByIndex(JournalIndex.ISC).FilterByYear(year);
                 if (items.Any())
                 {
                     items = items.OrderByDescending(i => i.Year).ThenBy(i => i.QRank);
-                    var result = items.Select(i => new LastRecordModel
+                    var result = items.Select(i => new TypeRecordList
                     {
-                        Category = i.Category,
-                        IF = i.If as double?,
-                        AIF = i.Aif as double?,
-                        Index = i.Index.GetCaption(),
-                        Issn = i.Journal.Issn,
-                        Publisher = i.Journal.Publisher,
-                        EIssn = i.Journal.EIssn,
-                        Year = i.Year,
-                        QRank = i.QRank,
-                        JournalType = i.Type!.GetCaption()
-                    }).FirstOrDefault();
-
-                    return Ok(result);
-                }
-
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [Route("GetFullInfo")]
-        [HttpGet]
-        public IActionResult GetFullInfo(string title, int year)
-        {
-            try
-            {
-                var items = _unitOfWork.JournalRecords.GetAll().FilterByJournalTitle(title).FilterByYear(year);
-                if (items.Any())
-                {
-                    items = items.OrderByDescending(i => i.Year).ThenBy(i => i.QRank);
-                    var result = items.Select(i => new JournalRecordList
-                    {
+                        Title = i.Journal.Title,
                         Category = i.Category.Trim(),
                         If = i.If,
-                        Aif = i.Aif,
-                        Mif = i.Mif,
-                        Index = i.Index,
-                        IscClass = i.IscClass,
-                        Year = i.Year,
                         QRank = i.QRank,
                         Type = i.Type,
-                        Value = i.Value
+                        ISSN = i.Journal.Issn
                     }).ToList();
 
                     return Ok(result);
@@ -127,17 +159,18 @@ namespace JournalBank.Controllers
             }
         }
 
-        [Route("GetISCList")]
+
+        [Route("GetJCRList")]
         [HttpGet]
-        public IActionResult GetISCList(int year)
+        public IActionResult GetJCRList(int year)
         {
             try
             {
-                var items = _unitOfWork.JournalRecords.GetAll().FilterByIndex(JournalIndex.ISC).FilterByYear(year);
+                var items = _unitOfWork.JournalRecords.GetAll().FilterByIndex(JournalIndex.JCR).FilterByYear(year);
                 if (items.Any())
                 {
                     items = items.OrderByDescending(i => i.Year).ThenBy(i => i.QRank);
-                    var result = items.Select(i => new ISCRecordList
+                    var result = items.Select(i => new TypeRecordList
                     {
                         Title = i.Journal.Title,
                         Category = i.Category.Trim(),

@@ -25,23 +25,23 @@
                     <div class="col-lg-12 col-sm-12">
                         <div class="row mb-2">
                             <div class="col-3 text-muted">شناسه:</div>
-                            <div class="col-9">@Model.JournalInfo.Id</div>
+                            <div class="col-9">@Model.AddJournalInfo.Id</div>
                         </div>
                         <div class="row mb-2">
                             <div class="col-3 text-muted">عنوان مجله:</div>
-                            <div class="col-9">@Model.JournalInfo.Title</div>
+                            <div class="col-9">@Model.AddJournalInfo.Title</div>
                         </div>
                         <div class="row mb-2">
                             <div class="col-3 text-muted">وب سایت:</div>
-                            <div class="col-9">@Model.JournalInfo.Website</div>
+                            <div class="col-9">@Model.AddJournalInfo.Website</div>
                         </div>
                         <div class="row mb-2">
                             <div class="col-3 text-muted">ناشر:</div>
-                            <div class="col-9">@Model.JournalInfo.Publisher</div>
+                            <div class="col-9">@Model.AddJournalInfo.Publisher</div>
                         </div>
                         <div class="row mb-2">
                             <div class="col-3 text-muted">کشور:</div>
-                            <div class="col-9">@Model.JournalInfo.Country</div>
+                            <div class="col-9">@Model.AddJournalInfo.Country</div>
                         </div>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-12 text-left">
-                        <a class="btn btn-gradient-primary px-5" asp-page="@PageUrl.AddJournalsRecord" asp-route-journalId="@Model.JournalInfo.Id">
+                        <a class="btn btn-gradient-primary px-5" asp-page="@PageUrl.AddJournalsRecord" asp-route-journalId="@Model.AddJournalInfo.Id">
                             @Glossary.AddRecord
                         </a>
                     </div>

@@ -17,10 +17,6 @@ namespace JournalBank.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        // get by DOI
-        // get by journal title
-
-
         [Route("GetByDoi")]
         [HttpGet]
         public IActionResult GetByDoi(string doi)

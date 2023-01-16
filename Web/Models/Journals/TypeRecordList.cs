@@ -2,7 +2,7 @@ using Entities.Journals;
 
 namespace Web.Models.Journals
 {
-    public class ISCRecordList
+    public class TypeRecordList
     {
         public string Title { get; set; }
         public string Category { get; set; }

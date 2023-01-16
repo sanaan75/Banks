@@ -12,7 +12,7 @@ namespace JournalBank.Pages._App.Users
         private readonly IUnitOfWork _unitOfWork;
 
         public List<RecordModel> JournalRecords { get; set; }
-        public JournalModel JournalInfo { get; set; }
+        public AddJournalModel AddJournalInfo { get; set; }
 
         public Index(IUnitOfWork unitOfWork)
         {
@@ -21,7 +21,7 @@ namespace JournalBank.Pages._App.Users
         public void OnGet(int id)
         {
             var journal = _unitOfWork.Journals.GetById(id);
-            JournalInfo = new JournalModel
+            AddJournalInfo = new AddJournalModel
             {
                 Id = journal.Id,
                 Title = journal.Title,

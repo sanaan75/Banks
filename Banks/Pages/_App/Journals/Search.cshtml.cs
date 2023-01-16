@@ -16,7 +16,7 @@ namespace JournalBank.Pages._App.Journals
         public Dictionary<string, int> Indexes { get; set; }
         public Dictionary<string, int> q { get; set; }
         public FilterModel FilterModel { get; set; }
-        public List<JournalModel> JournalList { get; set; }
+        public List<AddJournalModel> JournalList { get; set; }
 
         public Search(IUnitOfWork unitOfWork)
         {
@@ -27,7 +27,7 @@ namespace JournalBank.Pages._App.Journals
 
         public void OnGet()
         {
-            JournalList = new List<JournalModel>();
+            JournalList = new List<AddJournalModel>();
         }
 
 
@@ -43,7 +43,7 @@ namespace JournalBank.Pages._App.Journals
             if (filterModel.MaxIf != null)
                 items = items.Where(i => i.Records.Any(j => j.If.Value <= filterModel.MaxIf));
 
-            JournalList = items.Select(i => new JournalModel
+            JournalList = items.Select(i => new AddJournalModel
             {
                 Id = i.Id,
                 Title = i.Title,

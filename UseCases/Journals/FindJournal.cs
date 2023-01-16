@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Entities;
+﻿using Entities;
 using Framework;
 using UseCases.ResultModels;
 
@@ -43,7 +41,7 @@ namespace UseCases.Journals
                     {
                         Title = record.Journal.Title,
                         ISSN = record.Journal.Issn,
-                        URL = record.Journal.WebSite,
+                        WebSite = record.Journal.WebSite,
                         Publisher = record.Journal.Publisher,
                         Country = record.Journal.Country
                     }

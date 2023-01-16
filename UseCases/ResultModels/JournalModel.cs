@@ -4,7 +4,8 @@ namespace UseCases.ResultModels
     {
         public string Title { get; set; }
         public string ISSN { get; set; }
-        public string URL { get; set; }
+        public string EISSN { get; set; }
+        public string WebSite { get; set; }
         public string Publisher { get; set; }
         public string Country { get; set; }
     }

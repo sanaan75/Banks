@@ -13,7 +13,7 @@ namespace Banks.Pages._App.Journals
         private readonly IUnitOfWork _unitOfWork;
         public Dictionary<string, int> Indexes { get; set; }
         public FilterModel SearchModel { get; set; }
-        public List<JournalModel> JournalList { get; set; }
+        public List<AddJournalModel> JournalList { get; set; }
 
         public Index(IUnitOfWork unitOfWork)
         {
@@ -23,7 +23,7 @@ namespace Banks.Pages._App.Journals
 
         public void OnGet()
         {
-            JournalList = new List<JournalModel>();
+            JournalList = new List<AddJournalModel>();
         }
 
         public IActionResult OnPost(FilterModel searchModel)
@@ -31,7 +31,7 @@ namespace Banks.Pages._App.Journals
             JournalList = _unitOfWork.Journals.GetAll().FilterByKeyword(searchModel.Title)
                 .FilterByYear(searchModel.Year)
                 .FilterByIndex(searchModel.Index)
-                .Select(i => new JournalModel
+                .Select(i => new AddJournalModel
                 {
                     Id = i.Id,
                     Title = i.Title,
