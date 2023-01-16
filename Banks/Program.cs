@@ -62,7 +62,7 @@ app.UseAuthorization();
 
 app.UseSession();
 
-app.Map("/api", ApiCheck);
+//app.Map("/api", ApiCheck);
 
 app.UseCors(x => x
     .AllowAnyMethod()

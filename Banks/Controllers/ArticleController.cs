@@ -105,46 +105,49 @@ namespace JournalBank.Controllers
 
                 try
                 {
-                    HttpClient client2 = new HttpClient();
-                    client2.BaseAddress = new Uri("https://api.crossref.org/members/" + member);
-                    client2.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    HttpResponseMessage response2 = client2.GetAsync("").Result;
-                    if (response2.IsSuccessStatusCode)
+                    HttpClient membersClient = new HttpClient();
+                    membersClient.BaseAddress = new Uri("https://api.crossref.org/members/" + member);
+                    membersClient.DefaultRequestHeaders.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue("application/json"));
+                    HttpResponseMessage responseForMembers = membersClient.GetAsync("").Result;
+
+                    if (responseForMembers.IsSuccessStatusCode)
                     {
-                        var str2 = response2.Content.ReadAsStringAsync();
+                        var str2 = responseForMembers.Content.ReadAsStringAsync();
                         var data2 = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(str2.Result);
                         location = data2["message"]["location"];
                     }
-                }
-                catch
-                {
-                }
 
-                if (date_indexed != null && journal_title != null)
-                {
-                    var journal = _unitOfWork.Journals.GetAll()
-                        .FilterByTitle(journal_title)
-                        .Select(i => new { i.Id })
-                        .FirstOrDefault();
-
-                    if (journal != null)
+                    if (date_indexed != null && journal_title != null)
                     {
-                        var record = _unitOfWork.JournalRecords.GetAll()
-                            .FilterByJournal(journal.Id)
-                            .Where(i => i.Year < date.Year)
-                            .OrderByDescending(i => i.Year)
-                            .ThenBy(i => i.QRank).ThenBy(i => i.If)
-                            .Select(i => new { i.If, i.Index, i.Mif, i.QRank })
+                        var journalId = _unitOfWork.Journals.GetAll()
+                            .FilterByTitle(journal_title)
+                            .Select(i => i.Id)
                             .FirstOrDefault();
 
-                        if (record != null)
+                        if (journalId != null)
                         {
-                            IF = record.If;
-                            Index = record.Index;
-                            Mif = record.Mif;
-                            qRank = record.QRank;
+                            var record = _unitOfWork.JournalRecords.GetAll()
+                                .FilterByJournal(journalId)
+                                .Where(i => i.Year < date.Year)
+                                .OrderByDescending(i => i.Year)
+                                .ThenBy(i => i.QRank).ThenBy(i => i.If)
+                                .Select(i => new { i.If, i.Index, i.Mif, i.QRank })
+                                .FirstOrDefault();
+
+                            if (record != null)
+                            {
+                                IF = record.If;
+                                Index = record.Index;
+                                Mif = record.Mif;
+                                qRank = record.QRank;
+                            }
                         }
                     }
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500);
                 }
 
                 var result = new ArticleModel
@@ -172,19 +175,17 @@ namespace JournalBank.Controllers
                 client.Dispose();
                 return new JsonResult(result);
             }
-            else
+
+            switch ((int)response.StatusCode)
             {
-                switch ((int)response.StatusCode)
-                {
-                    case 401:
-                        return Unauthorized();
-                    case 403:
-                        return Forbid();
-                    case 404:
-                        return NotFound();
-                    default:
-                        return BadRequest();
-                }
+                case 401:
+                    return Unauthorized();
+                case 403:
+                    return Forbid();
+                case 404:
+                    return NotFound();
+                default:
+                    return BadRequest();
             }
         }
     }

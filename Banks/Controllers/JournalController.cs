@@ -1,7 +1,6 @@
 ﻿using Entities.Journals;
 using Framework;
 using Microsoft.AspNetCore.Mvc;
-using UseCases.Journals;
 using UseCases.ResultModels;
 using Web.Models.Journals;
 
@@ -13,7 +12,7 @@ namespace JournalBank.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public JournalController( IUnitOfWork unitOfWork)
+        public JournalController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
@@ -107,23 +106,6 @@ namespace JournalBank.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-            }
-        }
-
-
-        //this is test api
-        [Route("GetUsers")]
-        [HttpGet]
-        public IActionResult GetUsers()
-        {
-            try
-            {
-                var users = _unitOfWork.Users.GetAll();
-                return Ok(users);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
             }
         }
 

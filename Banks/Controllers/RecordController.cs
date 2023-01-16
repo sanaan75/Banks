@@ -55,6 +55,7 @@ namespace Banks.Controllers
             }
         }
 
+        
         [Route("GetRecords")]
         [HttpGet]
         public JsonResult GetRecords(RecordSearchModel searchModel)

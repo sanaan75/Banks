@@ -8,11 +8,11 @@ namespace Entities.Journals
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public string Issn { get; set; }
-        public string EIssn { get; set; }
-        public string WebSite { get; set; }
-        public string Publisher { get; set; }
-        public string Country { get; set; }
+        public string? Issn { get; set; }
+        public string? EIssn { get; set; }
+        public string? WebSite { get; set; }
+        public string? Publisher { get; set; }
+        public string? Country { get; set; }
         public DateTime? CreateDate { get; set; }
         public int? CreatorId { get; set; }
         public User Creator { get; set; }
