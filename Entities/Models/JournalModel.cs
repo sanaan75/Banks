@@ -1,4 +1,4 @@
-namespace UseCases.ResultModels
+namespace Entities.Models
 {
     public class JournalModel
     {

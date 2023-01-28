@@ -1,10 +1,11 @@
 ﻿using Entities.Journals;
+using Entities.Models;
 using Framework;
 using Microsoft.AspNetCore.Mvc;
 using UseCases.ResultModels;
 using Web.Models.Journals;
 
-namespace JournalBank.Controllers
+namespace Banks.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -110,49 +111,17 @@ namespace JournalBank.Controllers
         }
 
 
-        [Route("GetISCList")]
+        [Route("GetListByIndex")]
         [HttpGet]
-        public IActionResult GetISCList(int year)
+        public IActionResult GetListByIndex(int year, JournalIndex index)
         {
             try
             {
-                var items = _unitOfWork.JournalRecords.GetAll().FilterByIndex(JournalIndex.ISC).FilterByYear(year);
+                var items = _unitOfWork.JournalRecords.GetAll().FilterByIndex(index).FilterByYear(year);
                 if (items.Any())
                 {
                     items = items.OrderByDescending(i => i.Year).ThenBy(i => i.QRank);
-                    var result = items.Select(i => new TypeRecordList
-                    {
-                        Title = i.Journal.Title,
-                        Category = i.Category.Trim(),
-                        If = i.If,
-                        QRank = i.QRank,
-                        Type = i.Type,
-                        ISSN = i.Journal.Issn
-                    }).ToList();
-
-                    return Ok(result);
-                }
-
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-
-        [Route("GetJCRList")]
-        [HttpGet]
-        public IActionResult GetJCRList(int year)
-        {
-            try
-            {
-                var items = _unitOfWork.JournalRecords.GetAll().FilterByIndex(JournalIndex.JCR).FilterByYear(year);
-                if (items.Any())
-                {
-                    items = items.OrderByDescending(i => i.Year).ThenBy(i => i.QRank);
-                    var result = items.Select(i => new TypeRecordList
+                    var result = items.Select(i => new RecordsByIndexModel
                     {
                         Title = i.Journal.Title,
                         Category = i.Category.Trim(),
@@ -174,11 +143,5 @@ namespace JournalBank.Controllers
         }
     }
 
-    public class RecordSearchModel
-    {
-        public int? Year { get; set; }
-        public string Title { get; set; }
-        public string Issn { get; set; }
-        public string Category { get; set; }
-    }
+
 }

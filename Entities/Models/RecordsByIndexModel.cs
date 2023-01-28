@@ -1,8 +1,8 @@
 using Entities.Journals;
 
-namespace Web.Models.Journals
+namespace Entities.Models
 {
-    public class TypeRecordList
+    public class RecordsByIndexModel
     {
         public string Title { get; set; }
         public string Category { get; set; }

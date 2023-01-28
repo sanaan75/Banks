@@ -1,6 +1,6 @@
 using Entities.Journals;
+using Entities.Models;
 using Framework;
-using JournalBank.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using UseCases.Journals;
 using Web.Models.Journals;
@@ -20,9 +20,9 @@ namespace Banks.Controllers
             _findJournal = findJournal;
         }
 
-        [Route("GetRecordsInfo")]
+        [Route("GetByTitleAndYear")]
         [HttpGet]
-        public IActionResult GetRecordsInfo(string title, int year)
+        public IActionResult GetByTitleAndYear(string title, int year)
         {
             try
             {
@@ -55,10 +55,9 @@ namespace Banks.Controllers
             }
         }
 
-        
-        [Route("GetRecords")]
+        [Route("Records")]
         [HttpGet]
-        public JsonResult GetRecords(RecordSearchModel searchModel)
+        public JsonResult Records(RecordsModel searchModel)
         {
             var recordsList = _findJournal.Respond(new IFindJournal.Request
             {

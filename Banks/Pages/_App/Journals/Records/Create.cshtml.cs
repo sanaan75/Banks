@@ -2,19 +2,17 @@
 using Entities.Journals;
 using Framework;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using UseCases.Journals;
-using Web.Models.Records;
 using Web.RazorPages;
 
-namespace JournalBank.Pages._App.Journals.Records
+namespace Banks.Pages._App.Journals.Records
 {
     public class Create : AppPageModel
     {
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAddJournalRecord _addJournalRecord;
-        public AddRecordModel RecordModel { get; set; }
+        public DataItem RecordModel { get; set; }
         public Dictionary<string, int> Indexes { get; set; }
         public Dictionary<string, int> Types { get; set; }
         public Dictionary<string, int> Ranks { get; set; }
@@ -34,7 +32,7 @@ namespace JournalBank.Pages._App.Journals.Records
             JournalId = journalId;
         }
 
-        public IActionResult OnPost(AddRecordModel recordModel)
+        public IActionResult OnPost(DataItem recordModel)
         {
             try
             {
@@ -61,5 +59,18 @@ namespace JournalBank.Pages._App.Journals.Records
             }
             return Page();
         }
+    }
+    
+    public class DataItem
+    {
+        public int JournalId { get; set; }
+        public string Category { get; set; }
+        public int Year { get; set; }
+        public int? Index { get; set; }
+        public int? Type { get; set; }
+        public int? QRank { get; set; }
+        public decimal? IF { get; set; }
+        public decimal? MIF { get; set; }
+        public decimal? AIF { get; set; }
     }
 }

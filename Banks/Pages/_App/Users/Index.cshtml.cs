@@ -1,18 +1,15 @@
-using System.Collections.Generic;
-using System.Linq;
 using Entities;
 using Framework;
-using Web.Models.Journals;
 using Web.RazorPages;
 
-namespace JournalBank.Pages._App.Users
+namespace Banks.Pages._App.Users
 {
     public class Index : AppPageModel
     {
         private readonly IUnitOfWork _unitOfWork;
 
         public List<RecordModel> JournalRecords { get; set; }
-        public AddJournalModel AddJournalInfo { get; set; }
+        public DataItem AddJournalInfo { get; set; }
 
         public Index(IUnitOfWork unitOfWork)
         {
@@ -21,7 +18,7 @@ namespace JournalBank.Pages._App.Users
         public void OnGet(int id)
         {
             var journal = _unitOfWork.Journals.GetById(id);
-            AddJournalInfo = new AddJournalModel
+            AddJournalInfo = new DataItem
             {
                 Id = journal.Id,
                 Title = journal.Title,
@@ -58,5 +55,15 @@ namespace JournalBank.Pages._App.Users
         public decimal? If { get; set; }
         public decimal? Mif { get; set; }
         public decimal? Aif { get; set; }
+    }
+    
+    public class DataItem
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string ISSN { get; set; }
+        public string Website { get; set; }
+        public string Publisher { get; set; }
+        public string Country { get; set; }
     }
 }

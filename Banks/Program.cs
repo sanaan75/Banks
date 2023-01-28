@@ -1,7 +1,4 @@
 using System.Reflection;
-using System.Security.Cryptography;
-using System.Text;
-using ClosedXML.Excel;
 using Framework;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
@@ -62,7 +59,7 @@ app.UseAuthorization();
 
 app.UseSession();
 
-//app.Map("/api", ApiCheck);
+app.Map("/api", ApiCheck);
 
 app.UseCors(x => x
     .AllowAnyMethod()
@@ -75,7 +72,6 @@ app.UseEndpoints(endpoints =>
     endpoints.MapRazorPages();
     endpoints.MapControllers();
 });
-
 
 app.Run();
 

@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Models;
 using Framework;
 using UseCases.ResultModels;
 

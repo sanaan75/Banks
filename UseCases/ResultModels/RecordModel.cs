@@ -1,3 +1,5 @@
+using Entities.Models;
+
 namespace UseCases.ResultModels
 {
     public class RecordModel

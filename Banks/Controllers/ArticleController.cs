@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using Entities.Journals;
+using Entities.Models;
 using Framework;
-using Web.Models.Articles;
+using Microsoft.AspNetCore.Mvc;
 
-namespace JournalBank.Controllers
+namespace Banks.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

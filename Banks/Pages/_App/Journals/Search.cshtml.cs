@@ -1,11 +1,8 @@
 using Framework;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using Entities;
 using Entities.Journals;
-using Web.Models.Journals;
 using Web.RazorPages;
 
 namespace JournalBank.Pages._App.Journals
@@ -16,7 +13,7 @@ namespace JournalBank.Pages._App.Journals
         public Dictionary<string, int> Indexes { get; set; }
         public Dictionary<string, int> q { get; set; }
         public FilterModel FilterModel { get; set; }
-        public List<AddJournalModel> JournalList { get; set; }
+        public List<DataItem> JournalList { get; set; }
 
         public Search(IUnitOfWork unitOfWork)
         {
@@ -27,7 +24,7 @@ namespace JournalBank.Pages._App.Journals
 
         public void OnGet()
         {
-            JournalList = new List<AddJournalModel>();
+            JournalList = new List<DataItem>();
         }
 
 
@@ -43,7 +40,7 @@ namespace JournalBank.Pages._App.Journals
             if (filterModel.MaxIf != null)
                 items = items.Where(i => i.Records.Any(j => j.If.Value <= filterModel.MaxIf));
 
-            JournalList = items.Select(i => new AddJournalModel
+            JournalList = items.Select(i => new DataItem
             {
                 Id = i.Id,
                 Title = i.Title,
@@ -65,5 +62,15 @@ namespace JournalBank.Pages._App.Journals
         [Display(Name = "رتبه")] public JournalQRank? q { get; set; }
         [Display(Name = " بیشینه IF")] public decimal? MaxIf { get; set; }
         [Display(Name = "کمینه IF")] public decimal? MinIf { get; set; }
+    }
+
+    public class DataItem
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string ISSN { get; set; }
+        public string Website { get; set; }
+        public string Publisher { get; set; }
+        public string Country { get; set; }
     }
 }
