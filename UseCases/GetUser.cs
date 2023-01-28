@@ -1,5 +1,4 @@
 using Framework;
-using Web.Models;
 
 namespace Web;
 
@@ -24,4 +23,10 @@ public class GetUser : IGetUser
 
         return profile;
     }
+}
+public class ProfileModel
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Picture { get; set; }
 }

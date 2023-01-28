@@ -1,8 +1,8 @@
-﻿using Entities.Journals;
+﻿using System.ComponentModel.DataAnnotations;
+using Entities.Journals;
 using Microsoft.AspNetCore.Http;
-using System.ComponentModel.DataAnnotations;
 
-namespace Web.Models.Journals
+namespace Entities.Models
 {
     public class ReadModel
     {

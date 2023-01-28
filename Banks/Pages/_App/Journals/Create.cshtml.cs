@@ -3,7 +3,6 @@ using Entities.Journals;
 using Framework;
 using Microsoft.AspNetCore.Mvc;
 using UseCases.Journals;
-using Web.Models.Journals;
 using Web.RazorPages;
 
 namespace Banks.Pages._App.Journals

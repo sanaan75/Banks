@@ -1,10 +1,8 @@
-using System;
 using Framework;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using UseCases.Users;
 using Web;
-using Web.Models.Users;
 
 namespace JournalBank.Pages._App.Users
 {
@@ -47,5 +45,14 @@ namespace JournalBank.Pages._App.Users
                 return Page();
             }
         }
+    }
+
+    public class AddUserModel
+    {
+        public string UserName { get; set; }
+        public string Password { get; set; }
+        public string Title { get; set; }
+        public bool Enabled { get; set; }
+        public bool SysAdmin { get; set; }
     }
 }

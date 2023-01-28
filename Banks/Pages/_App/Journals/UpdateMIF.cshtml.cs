@@ -1,10 +1,10 @@
 using Entities;
 using Entities.Journals;
+using Entities.Models;
 using Framework;
 using Microsoft.AspNetCore.Mvc;
 using UseCases;
 using UseCases.Journals;
-using Web.Models.Journals;
 using Web.RazorPages;
 
 namespace Banks.Pages._App.Journals

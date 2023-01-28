@@ -2,8 +2,6 @@
 using Entities.Models;
 using Framework;
 using Microsoft.AspNetCore.Mvc;
-using UseCases.ResultModels;
-using Web.Models.Journals;
 
 namespace Banks.Controllers
 {

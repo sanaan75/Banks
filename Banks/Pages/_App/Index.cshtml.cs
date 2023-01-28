@@ -12,8 +12,6 @@ public class Index : AppPageModel
     private readonly IMenuHelper _menuHelper;
     private readonly IUnitOfWork _unitOfWork;
 
-    public List<Note> Notes = new();
-
     public Index(IUnitOfWork unitOfWork, IMenuHelper menuHelper)
     {
         _unitOfWork = unitOfWork;
@@ -31,10 +29,4 @@ public class Index : AppPageModel
         journals = _unitOfWork.Journals.GetAll().Count();
         users = _unitOfWork.Users.GetAll().Count();
     }
-}
-
-public class Note
-{
-    public string text { get; set; }
-    public string url { get; set; }
 }

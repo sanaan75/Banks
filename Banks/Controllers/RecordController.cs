@@ -3,7 +3,6 @@ using Entities.Models;
 using Framework;
 using Microsoft.AspNetCore.Mvc;
 using UseCases.Journals;
-using Web.Models.Journals;
 
 namespace Banks.Controllers
 {
@@ -69,5 +68,19 @@ namespace Banks.Controllers
 
             return new JsonResult(recordsList);
         }
+    }
+
+    public class JournalRecordList
+    {
+        public string Category { get; set; }
+        public decimal? If { get; set; }
+        public decimal? Aif { get; set; }
+        public decimal? Mif { get; set; }
+        public JournalIndex Index { get; set; }
+        public JournalIscClass? IscClass { get; set; }
+        public int Year { get; set; }
+        public JournalQRank? QRank { get; set; }
+        public JournalType? Type { get; set; }
+        public JournalValue? Value { get; set; }
     }
 }

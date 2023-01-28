@@ -3,13 +3,10 @@ using Entities;
 using Entities.Journals;
 using Framework;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using Entities.Models;
 using UseCases;
 using UseCases.Journals;
-using Web.Models.Journals;
+
 using Web.RazorPages;
 
 namespace JournalBank.Pages._App.Journals
@@ -98,7 +95,7 @@ namespace JournalBank.Pages._App.Journals
                                         }
                                     }
 
-                                    var model = new JournalRecordModel
+                                    var model = new DataItem
                                     {
                                         JournalName = finalText[2].Trim().Replace("\"", ""),
                                         ISSN = issn,
@@ -161,10 +158,6 @@ namespace JournalBank.Pages._App.Journals
                                     _unitOfWork.Save();
                                 }
                             }
-                            else
-                            {
-                                // type is not journal
-                            }
                         }
 
                     }
@@ -226,6 +219,21 @@ namespace JournalBank.Pages._App.Journals
                     return null;
             }
         }
+        
+        public class DataItem
+        {
+            public string JournalName { get; set; }
+            public string ISSN { get; set; }
+            public string EISSN { get; set; }
+            public int Year { get; set; }
+            public JournalIndex Index { get; set; }
+            public string Category { get; set; }
+            public string Country { get; set; }
+            public string Publisher { get; set; }
+            public decimal? IF { get; set; }
+            public JournalQRank? Rank { get; set; }
+        }
     }
+
 
 }
