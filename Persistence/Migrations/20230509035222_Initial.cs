@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Persistence.Migrations
 {
-    public partial class InitialApp : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -76,11 +76,11 @@ namespace Persistence.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Issn = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EIssn = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    WebSite = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Publisher = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Country = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Issn = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EIssn = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    WebSite = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Publisher = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatorId = table.Column<int>(type: "int", nullable: true),
                     LastUpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),

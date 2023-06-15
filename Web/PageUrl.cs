@@ -16,7 +16,7 @@
 
         public const string Journals = "/_App/Journals/Index";
         public const string AddJournal = "/_App/Journals/Create";
-        public const string ListJournals = "/_App/Journals/List";
+        public const string ListJournals = "/_App/Journals/Index";
         public const string UpdateJournal = "/_App/Journals/Edit";
         public const string SearchJournals = "/_App/Journals/Search";
 
@@ -24,12 +24,13 @@
         public const string AddJournalsRecord = "/_App/Journals/Records/Create";
         public const string UpdateJournalsRecord = "/_App/Journals/Records/Edit";
 
-        public const string ReadFromExcel = "/_App/Journals/ReadExcel";
+        public const string ImportFromExcel = "/_App/Journals/ImportExcel";
         public const string ReadExcelCloritive = "/_App/Journals/ReadExcelCloritive";
         public const string UpdateIF = "/_App/Journals/UpdateIF";
         public const string UpdateIF2 = "/_App/Journals/UpdateIF2";
         public const string UpdateISC = "/_App/Journals/UpdateISC";
-        public const string UpdateMIF = "/_App/Journals/UpdateMIF2";
+        public const string UpdateByYear = "/_App/Journals/UpdateByYear";
+        public const string UpdateMIF = "/_App/Journals/UpdateMIF";
 
         public const string Reports = ListReports;
         public const string AddReport = "/_App/Reports/Add";

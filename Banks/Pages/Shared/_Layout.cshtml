@@ -203,6 +203,21 @@ justify-content: flex-start;
                 <li>
                     <a asp-page="@PageUrl.ListJournals">@Glossary.List</a>
                 </li>
+                <li>
+                    <a asp-page="@PageUrl.SearchJournals">جستجو مجلات</a>
+                </li>
+                <li>
+                    <a asp-page="@PageUrl.ImportFromExcel">افزودن مجلات از sji</a>
+                </li>
+                <li>
+                    <a asp-page="@PageUrl.UpdateByYear">افزودن مجلات از ISC</a>
+                </li>
+                <li>
+                    <a asp-page="@PageUrl.UpdateIF2">به روز رسانی IF</a>
+                </li>
+                <li>
+                    <a asp-page="@PageUrl.UpdateMIF">به روز رسانی MIF</a>
+                </li>
             </ul>
 
             <ul class="@{@Html.Raw(menuHelper.Respond(Menu.Reports))}" id="Reports">

@@ -41,10 +41,6 @@ namespace Banks.Pages._App.Journals
                 {
                     if (readModel.FormFile.Length > 0)
                     {
-                        
-                        
-                        
-                        
                         var data = _excelFileReader.ToDataTable(readModel.FormFile);
 
                         string category = string.Empty;

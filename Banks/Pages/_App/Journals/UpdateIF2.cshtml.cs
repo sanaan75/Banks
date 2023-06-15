@@ -42,78 +42,33 @@ namespace Banks.Pages._App.Journals
                     if (readModel.FormFile.Length > 0)
                     {
                         var dataSet = _excelFileReader.ToDataSet(readModel.FormFile);
-                        var items = dataSet.SetToList<Journal_Model>();
+                        var items = dataSet.SetToList<Journal_IF_Model>();
 
                         foreach (var item in items)
                         {
                             if (string.IsNullOrEmpty(item.Title) == true)
                                 continue;
 
-                            var categories = item.Category.Split(";");
-
                             var journal = _unitOfWork.Journals.GetAll().FilterByTitle(item.Title).FirstOrDefault();
 
                             if (journal != null)
                             {
-                                foreach (var cat in categories)
+                                var categories = _unitOfWork.JournalRecords.GetAll().FilterByYear(readModel.Year)
+                                    .FilterByIndex(readModel.Index).FilterByJournal(journal.Id);
+
+                                if (journal.Issn == null && item.ISSN != null)
                                 {
-                                    var category = cat.Substring(0, cat.Length - 6).Trim();
-
-                                    var records = _unitOfWork.JournalRecords.GetAll()
-                                        .FilterByJournal(journal.Id)
-                                        .FilterByYear(readModel.Year)
-                                        .FilterByIndex(readModel.Index).ToList();
-
-                                    var record = records.FirstOrDefault(k =>
-                                        k.Category.Trim().ToLower() == category.Trim().ToLower());
-
-                                    if (record != null)
-                                    {
-                                        record.If = item.IF;
-                                        record.QRank = GetQrank(item.QRank);
-                                    }
-                                    else
-                                    {
-                                        _addJournalRecord.Respond(new IAddJournalRecord.Request
-                                        {
-                                            JournalId = journal.Id,
-                                            Category = category,
-                                            Year = readModel.Year,
-                                            If = item.IF,
-                                            QRank = GetQrank(item.QRank),
-                                            Index = readModel.Index,
-                                        });
-                                    }
+                                    journal.Issn = item.ISSN.Replace("-", "");
                                 }
-                            }
-                            else
-                            {
-                                var journalNew = _addJournal.Responce(new IAddJournal.Request
-                                {
-                                    Title = item.Title.Trim(),
-                                    Issn = item.ISSN.Replace("-", ""),
-                                    EIssn = item.EISSN.Replace("-", "")
-                                });
-                                _unitOfWork.Save();
 
                                 foreach (var cat in categories)
                                 {
-                                    var category = cat.Substring(0, cat.Length - 6).Trim();
-
-                                    _addJournalRecord.Respond(new IAddJournalRecord.Request
-                                    {
-                                        JournalId = journalNew.Id,
-                                        Category = category,
-                                        Year = readModel.Year,
-                                        If = item.IF,
-                                        QRank = GetQrank(item.QRank),
-                                        Index = readModel.Index,
-                                    });
+                                    cat.If = item.IF;
                                 }
                             }
-
-                            _unitOfWork.Save();
                         }
+
+                        _unitOfWork.Save();
                     }
 
                     SuccessMessage = "با موفقیت اپدیت شد";
@@ -146,6 +101,23 @@ namespace Banks.Pages._App.Journals
                 default:
                     return null;
             }
+        }
+
+        public class Journal_IF_Model
+        {
+            public string Title { get; set; }
+            public string ISSN { get; set; }
+            public decimal? IF { get; set; }
+        }
+
+        public class Journal_Model
+        {
+            public string Title { get; set; }
+            public string ISSN { get; set; }
+            public string EISSN { get; set; }
+            public string Category { get; set; }
+            public string QRank { get; set; }
+            public decimal? IF { get; set; }
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Entities.Journals
 
         public static IQueryable<JournalRecord> FilterByCategory(this IQueryable<JournalRecord> items, string category)
         {
-            return items.Filter(category, i => i.Category.ToLower() == category.ToUpper());
+            return items.Filter(category, i => i.Category.ToLower() == category.ToLower());
         }
 
         public static IQueryable<JournalRecord> FilterByIndex(this IQueryable<JournalRecord> items, JournalIndex? index)

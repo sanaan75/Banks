@@ -41,44 +41,33 @@ namespace Banks.Pages._App.Journals
                 {
                     if (readModel.FormFile.Length > 0)
                     {
-                        var data = _excelFileReader.ToDataTable(readModel.FormFile);
+                        var dataSet = _excelFileReader.ToDataSet(readModel.FormFile);
+                        var list = dataSet.SetToList<MIFModel>();
 
-                        var categoryName = string.Empty;
-                        decimal? MIF;
-                        decimal? AIF;
-
-
-                        for (int i = 0; i <= data.Rows.Count; i++)
+                        foreach (var item in list)
                         {
-                            var trim = data.Rows[i][0].ToString().Trim();
-
-                            categoryName = trim.Replace("-SSCI", " ");
-                            categoryName = categoryName.Trim();
-
-                            var mif = data.Rows[i][1].ToString().Trim();
-                            MIF = mif.Equals("N/A") ? null : Convert.ToDecimal(mif);
-
-                            var aif = data.Rows[i][2].ToString().Trim();
-                            AIF = (aif.Equals("N/A") || aif.Equals("")) ? null : Convert.ToDecimal(aif);
-
-                            var records = _unitOfWork.JournalRecords.GetAll().FilterByCategory(categoryName)
-                                .FilterByYear(readModel.Year)
-                                .FilterByIndex(readModel.Index);
-
-                            if (records.Any())
+                            var categories = item.Category.Split(",");
+                            foreach (var category in categories)
                             {
-                                foreach (var record in records)
-                                {
-                                    record.Mif = MIF;
-                                    record.Aif = AIF;
-                                }
+                                var records = _unitOfWork.JournalRecords.GetAll().FilterByCategory(category.Trim())
+                                    .FilterByYear(readModel.Year)
+                                    .FilterByIndex(readModel.Index);
 
-                                _unitOfWork.Save();
+                                if (records.Any())
+                                {
+                                    foreach (var record in records)
+                                    {
+                                        record.Mif = item.MIF;
+                                        record.Aif = item.AIF;
+                                    }
+
+                                    _unitOfWork.Save();
+                                }
                             }
                         }
                     }
                 }
-                catch
+                catch(Exception ex)
                 {
                     ErrorMessage = "عملیات با خطا مواجه شد";
                 }
@@ -92,32 +81,11 @@ namespace Banks.Pages._App.Journals
             return Page();
         }
 
-        private List<CategoryModel> GetCategories(string categories)
+        public class MIFModel
         {
-            var items = new List<CategoryModel>();
-            if (categories.Length > 5)
-            {
-                categories = categories.Substring(0, categories.Length - 1);
-                var list = categories.Split(";");
-                foreach (var item in list)
-                {
-                    var category = item.Trim();
-                    var rank = category.Substring(category.Length - 3, 2);
-                    var QRank = GetQrank(rank);
-
-                    var title = rank.StartsWith("Q")
-                        ? category.Substring(0, category.Length - 4).Trim()
-                        : category;
-                    items.Add(new CategoryModel
-                    {
-                        Title = title,
-                        Rank = QRank
-                    });
-                }
-            }
-
-
-            return items;
+            public string Category { get; set; }
+            public decimal? MIF { get; set; }
+            public decimal? AIF { get; set; }
         }
 
         private JournalQRank? GetQrank(string rank)

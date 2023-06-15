@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml.Drawing.Diagrams;
 using Entities;
 using Entities.Journals;
 using Entities.Models;
@@ -11,7 +10,7 @@ using Web.RazorPages;
 namespace Banks.Pages._App.Journals
 {
     [RequestFormLimits(MultipartBodyLengthLimit = 1048576000)]
-    public class UpdateISC : AppPageModel
+    public class UpdateByYear : AppPageModel
     {
         private readonly IUnitOfWork _unitOfWork;
         private IExcelFileReader _excelFileReader;
@@ -20,7 +19,8 @@ namespace Banks.Pages._App.Journals
         public Dictionary<string, int> Indexes { get; set; }
         public ReadModel ReadModel { get; set; }
 
-        public UpdateISC(IUnitOfWork unitOfWork, IExcelFileReader excelFileReader, IAddJournalRecord addJournalRecord,
+        public UpdateByYear(IUnitOfWork unitOfWork, IExcelFileReader excelFileReader,
+            IAddJournalRecord addJournalRecord,
             IAddJournal addJournal)
         {
             _unitOfWork = unitOfWork;
@@ -38,23 +38,21 @@ namespace Banks.Pages._App.Journals
         {
             if (ModelState.IsValid)
             {
+                int row = 1;
+                string title_ = "";
                 try
                 {
                     if (readModel.FormFile.Length > 0)
                     {
                         var dataSet = _excelFileReader.ToDataSet(readModel.FormFile);
-                        var items = dataSet.SetToList<ISC_Model>();
-                        var journals = _unitOfWork.Journals.GetAll().Select(i => new { i.Id, i.Title });
-
-                        foreach (var item in items)
+                        var items = dataSet.SetToList<Model>();
+                        var journals = _unitOfWork.Journals.GetAll().Select(i => new { i.Id, i.Title }).ToList();
+                        try
                         {
-                            try
+                            foreach (var item in items)
                             {
-                                if (string.IsNullOrEmpty(item.Title.Trim()) == true)
+                                if (string.IsNullOrEmpty(item.Title) == true)
                                     continue;
-
-                                // if (item.Year == null)
-                                //     continue;
 
                                 if (item.Categories.Equals("N/A"))
                                     continue;
@@ -68,7 +66,7 @@ namespace Banks.Pages._App.Journals
                                 {
                                     foreach (var cat in categories)
                                     {
-                                        var category = cat.Substring(0, cat.Length - 6).Trim();
+                                        var category = cat.Substring(0, cat.Length - 5).Trim();
 
                                         var records = _unitOfWork.JournalRecords.GetAll()
                                             .FilterByJournal(journal.Id)
@@ -100,14 +98,29 @@ namespace Banks.Pages._App.Journals
                                                 qRank = qRank.Replace("(", "").Replace(")", "").Trim();
                                             }
 
-                                            _addJournalRecord.Respond(new IAddJournalRecord.Request
+                                            var historyAlreadyExists = _unitOfWork.JournalRecords
+                                                .Find(i => i.JournalId == journal.Id)
+                                                .FilterByCategory(category)
+                                                .Any(i => i.Year == readModel.Year);
+
+                                            if (historyAlreadyExists == true)
+                                                continue;
+
+                                            _unitOfWork.JournalRecords.Add(new JournalRecord
                                             {
                                                 JournalId = journal.Id,
-                                                Category = category,
                                                 Year = readModel.Year,
-                                                If = item.IF,
-                                                QRank = GetQrank(qRank),
                                                 Index = readModel.Index,
+                                                Type = null,
+                                                Value = null,
+                                                IscClass = null,
+                                                QRank = GetQrank(qRank),
+                                                If = item.IF,
+                                                Category = category,
+                                                Mif = null,
+                                                Aif = null,
+                                                CreatorId = 1, //_actorService.UserId,
+                                                CreateDate = DateTime.UtcNow
                                             });
                                         }
                                     }
@@ -118,13 +131,12 @@ namespace Banks.Pages._App.Journals
                                     if (item.ISSN != null && item.ISSN.Equals("N/A") == false)
                                         Issn = item.ISSN;
 
-                                    var journalNew = _addJournal.Responce(new IAddJournal.Request
+                                    var _newJournal = _addJournal.Responce(new IAddJournal.Request
                                     {
                                         Title = item.Title.Trim(),
                                         Issn = Issn,
                                         EIssn = item.EISSN
                                     });
-                                    _unitOfWork.Save();
 
                                     foreach (var cat in categories)
                                     {
@@ -142,24 +154,31 @@ namespace Banks.Pages._App.Journals
                                             continue;
                                         }
 
-                                        _addJournalRecord.Respond(new IAddJournalRecord.Request
+                                        _unitOfWork.JournalRecords.Add(new JournalRecord
                                         {
-                                            JournalId = journalNew.Id,
-                                            Category = category,
+                                            Journal = _newJournal,
                                             Year = readModel.Year,
-                                            If = item.IF,
+                                            Index = readModel.Index,
+                                            Type = null,
+                                            Value = null,
+                                            IscClass = null,
                                             QRank = GetQrank(qRank),
-                                            Index = readModel.Index
+                                            If = item.IF,
+                                            Category = category,
+                                            Mif = null,
+                                            Aif = null,
+                                            CreatorId = 1, //_actorService.UserId,
+                                            CreateDate = DateTime.UtcNow
                                         });
                                     }
                                 }
                             }
-                            catch (Exception ex)
-                            {
-                            }
-                        }
 
-                        _unitOfWork.Save();
+                            _unitOfWork.Save();
+                        }
+                        catch (Exception ex)
+                        {
+                        }
                     }
 
                     SuccessMessage = "با موفقیت اپدیت شد";
@@ -195,15 +214,12 @@ namespace Banks.Pages._App.Journals
         }
     }
 
-    public class ISC_Model
+    public class Model
     {
         public string Title { get; set; }
         public string ISSN { get; set; }
         public string EISSN { get; set; }
-
         public decimal? IF { get; set; }
-
-        //public int? Year { get; set; }
         public string Categories { get; set; }
     }
 }
