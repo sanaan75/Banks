@@ -1,22 +1,23 @@
-using Framework;
+using Entities.Users;
+using UseCases.Interfaces;
 
 namespace Web;
 
 public class GetUser : IGetUser
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IDb _db;
 
-    public GetUser(IUnitOfWork unitOfWork)
+    public GetUser(IDb db)
     {
-        _unitOfWork = unitOfWork;
+        _db = db;
     }
 
     public ProfileModel Get(int id)
     {
-        var profile = _unitOfWork.Users.GetAll().Select(i => new ProfileModel
+        var profile = _db.Query<User>().Select(i => new ProfileModel
         {
             Id = i.Id,
-            Name = i.Username,
+            Name = i.Username
         }).FirstOrDefault(i => i.Id == id);
         if (profile.Picture == null)
             profile.Picture = "/lib/img/user.png";
@@ -24,6 +25,7 @@ public class GetUser : IGetUser
         return profile;
     }
 }
+
 public class ProfileModel
 {
     public int Id { get; set; }

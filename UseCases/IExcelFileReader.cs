@@ -1,11 +1,10 @@
 ﻿using System.Data;
 using Microsoft.AspNetCore.Http;
 
-namespace UseCases
+namespace UseCases;
+
+public interface IExcelFileReader
 {
-    public interface IExcelFileReader
-    {
-        DataTable ToDataTable(IFormFile file);
-        DataSet ToDataSet(IFormFile file);
-    }
+    DataTable ToDataTable(IFormFile file);
+    DataSet ToDataSet(IFormFile file);
 }

@@ -1,14 +1,11 @@
-﻿using System;
+﻿namespace Entities.Utilities;
 
-namespace Entities
+public class EnumInfoAttribute : Attribute
 {
-    public class EnumInfoAttribute : Attribute
+    public EnumInfoAttribute(string caption)
     {
-        public string Caption { get; set; }
-
-        public EnumInfoAttribute(string caption)
-        {
-            Caption = caption;
-        }
+        Caption = caption;
     }
+
+    public string Caption { get; set; }
 }

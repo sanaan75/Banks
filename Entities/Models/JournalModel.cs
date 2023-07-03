@@ -1,12 +1,11 @@
-namespace Entities.Models
+namespace Entities.Models;
+
+public class JournalModel
 {
-    public class JournalModel
-    {
-        public string Title { get; set; }
-        public string? ISSN { get; set; }
-        public string? EISSN { get; set; }
-        public string? WebSite { get; set; }
-        public string? Publisher { get; set; }
-        public string? Country { get; set; }
-    }
+    public string Title { get; set; }
+    public string? ISSN { get; set; }
+    public string? EISSN { get; set; }
+    public string? WebSite { get; set; }
+    public string? Publisher { get; set; }
+    public string? Country { get; set; }
 }

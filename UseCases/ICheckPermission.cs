@@ -1,9 +1,8 @@
 ﻿using Entities.Permissions;
 
-namespace UseCases
+namespace UseCases;
+
+public interface ICheckPermission
 {
-    public interface ICheckPermission
-    {
-        public bool Respond(List<Permission> permissions, Permission permission);
-    }
+    public bool Respond(List<Permission> permissions, Permission permission);
 }

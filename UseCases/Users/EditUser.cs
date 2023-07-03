@@ -1,44 +1,37 @@
 ﻿using Entities.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Entities.Helpers;
-using Framework;
+using Entities.Utilities;
+using UseCases.Interfaces;
 
-namespace UseCases.Users
+namespace UseCases.Users;
+
+public class EditUser : IEditUser
 {
-    public class EditUser : IEditUser
+    private readonly IDb _db;
+
+    public EditUser(IDb uitOfWork)
     {
-        
-        private readonly IUnitOfWork _unitOfWork;
+        _db = uitOfWork;
+    }
 
-        public EditUser(IUnitOfWork uitOfWork)
+    public void Responce(IEditUser.Request request)
+    {
+        var user = _db.Query<User>().GetById(request.Id);
+
+        Check.NotNull(user, () => "کاربر یافت نشد");
+
+        user.Title = request.Title;
+        user.Enabled = request.Enabled;
+        user.SysAdmin = request.SysAdmin;
+
+        var passwordShouldBeUpdated = string.IsNullOrWhiteSpace(request.Password) == false;
+
+        if (passwordShouldBeUpdated)
         {
-            _unitOfWork = uitOfWork;
-        }
+            Check.Equal(request.Password, request.PasswordConfirm, () => "PasswordNotMatch");
+            var newPasswordHashed = HashPassword.Hash(user.Username, request.Password);
+            Check.NotEqual(newPasswordHashed, user.Password, () => "PasswordNotChanged");
 
-        public void Responce(IEditUser.Request request)
-        {
-            var user = _unitOfWork.Users.GetById(request.Id);
-
-            Check.NotNull(user, () => "کاربر یافت نشد");
-
-            user.Title = request.Title;
-            user.Enabled = request.Enabled;
-            user.SysAdmin = request.SysAdmin;
-
-            var passwordShouldBeUpdated = string.IsNullOrWhiteSpace(request.Password) == false;
-
-            if (passwordShouldBeUpdated)
-            {
-                Check.Equal(request.Password, request.PasswordConfirm, () => "PasswordNotMatch");
-                var newPasswordHashed = HashPassword.Hash(user.Username, request.Password);
-                Check.NotEqual(newPasswordHashed, user.Password, () => "PasswordNotChanged");
-
-                user.Password = newPasswordHashed;
-            }
+            user.Password = newPasswordHashed;
         }
     }
 }

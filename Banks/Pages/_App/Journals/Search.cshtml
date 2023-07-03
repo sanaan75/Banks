@@ -1,7 +1,6 @@
 ﻿@page
-@model JournalBank.Pages._App.Journals.Search
 @using Web
-@using Entities
+@model Banks.Pages._App.Journals.Search
 
 <div class="row py-5">
     <div class="col-lg-12 col-sm-12 mb-3">
@@ -10,19 +9,19 @@
                 <form method="post">
                     <div class="row">
                         <div class="col-sm-12 col-lg-6 offset-lg-3 mb-4">
-                            
+
                             <div class="form-group mb-2">
                                 <label asp-for="@Model.FilterModel.Title" class="text-right"></label>
                                 <input type="text" asp-for="@Model.FilterModel.Title" class="form-control text-center" dir="ltr">
                                 <span class="text-danger" asp-validation-for="@Model.FilterModel.Title"></span>
                             </div>
-                            
+
                             <div class="form-group mb-3">
                                 <label asp-for="@Model.FilterModel.Year" class="text-center"></label>
                                 <input type="number" min="2010" max="2035" asp-for="@Model.FilterModel.Year" class="form-control text-center" dir="ltr">
                                 <span class="text-danger" asp-validation-for="@Model.FilterModel.Year"></span>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label asp-for="@Model.FilterModel.Index" class="form-label"></label><br>
                                 <select asp-for="@Model.FilterModel.Index" tabindex="-1" class="js-example-basic-single select2-hidden-accessible">
@@ -44,19 +43,19 @@
                                     }
                                 </select>
                             </div>
-                            
+
                             <div class="form-group mb-2">
                                 <label asp-for="@Model.FilterModel.MaxIf" class="text-center"></label>
                                 <input type="number" step="0.01" asp-for="@Model.FilterModel.MaxIf" class="form-control text-center" dir="ltr">
                                 <span class="text-danger" asp-validation-for="@Model.FilterModel.MaxIf"></span>
                             </div>
-                            
+
                             <div class="form-group mb-2">
                                 <label asp-for="@Model.FilterModel.MinIf" class="text-center"></label>
                                 <input type="number" step="0.01" asp-for="@Model.FilterModel.MinIf" class="form-control text-center" dir="ltr">
                                 <span class="text-danger" asp-validation-for="@Model.FilterModel.MinIf"></span>
                             </div>
-                            
+
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary px-5">جستجو</button>
@@ -70,34 +69,34 @@
             <div class="card-body">
                 <table id="example1" class="table table-striped table-bordered" width="100%">
                     <thead>
-                        <tr>
-                            <th>شناسه</th>
-                            <th>عنوان</th>
-                            <th>وب سایت</th>
-                            <th>ناشر</th>
-                            <th>کشور</th>
-                            <th>-</th>
-                        </tr>
+                    <tr>
+                        <th>شناسه</th>
+                        <th>عنوان</th>
+                        <th>وب سایت</th>
+                        <th>ناشر</th>
+                        <th>کشور</th>
+                        <th>-</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        @if (Model.JournalList.Any())
+                    @if (Model.JournalList.Any())
+                    {
+                        foreach (var journal in Model.JournalList)
                         {
-                            foreach (var journal in Model.JournalList)
-                            {
-                                <tr>
-                                    <td>@journal.Id</td>
-                                    <td>@journal.Title</td>
-                                    <td>@journal.Website</td>
-                                    <td>@journal.Publisher</td>
-                                    <td>@journal.Country</td>
-                                    <td>
-                                        <a class="btn btn-gradient-primary btn-rounded btn-sm mx-1" asp-page="@PageUrl.JournalsRecords" asp-route-id="@journal.Id">
-                                            مشاهده
-                                        </a>
-                                    </td>
-                                </tr>
-                            }
+                            <tr>
+                                <td>@journal.Id</td>
+                                <td>@journal.Title</td>
+                                <td>@journal.Website</td>
+                                <td>@journal.Publisher</td>
+                                <td>@journal.Country</td>
+                                <td>
+                                    <a class="btn btn-gradient-primary btn-rounded btn-sm mx-1" asp-page="@PageUrl.JournalsRecords" asp-route-id="@journal.Id">
+                                        مشاهده
+                                    </a>
+                                </td>
+                            </tr>
                         }
+                    }
                     </tbody>
                 </table>
             </div>

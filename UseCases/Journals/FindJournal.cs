@@ -1,55 +1,55 @@
-﻿using Entities;
+﻿using Entities.Journals;
 using Entities.Models;
-using Framework;
+using Entities.Utilities;
+using UseCases.Interfaces;
 using UseCases.ResultModels;
 
-namespace UseCases.Journals
+namespace UseCases.Journals;
+
+public class FindJournal : IFindJournal
 {
-    public class FindJournal : IFindJournal
+    private readonly IDb _db;
+
+    public FindJournal(IDb db)
     {
-        private readonly IUnitOfWork _unitOfWork;
+        _db = db;
+    }
 
-        public FindJournal(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
+    public List<RecordModel> Respond(IFindJournal.Request request)
+    {
+        var query = _db.Query<JournalRecord>();
+        query = query.Where(i => i.Year < request.Year);
 
-        public List<RecordModel> Respond(IFindJournal.Request request)
-        {
-            var query = _unitOfWork.JournalRecords.GetAll();
-            query = query.Where(i => i.Year < request.Year);
+        if (string.IsNullOrEmpty(request.Category) == false)
+            query = query.Where(j => j.Category == request.Category.ToUpper());
 
-            if (request.Category != null)
-                query = query.Where(j => j.Category == request.Category.ToUpper());
+        if (string.IsNullOrEmpty(request.Title) == false)
+            query = query.Where(k => k.Journal.Title.Contains(request.Title));
 
-            if (request.Title != null)
-                query = query.Where(k => k.Journal.Title.Contains(request.Title));
+        if (string.IsNullOrEmpty(request.Issn) == false)
+            query = query.FilterByIssn(request.Issn);
 
-            if (request.Issn != null)
-                query = query.Where(k => k.Journal.Issn == request.Issn);
-
-            var recordsList = query.Select(record => new RecordModel
+        var recordsList = query.Select(record => new RecordModel
+            {
+                Year = record.Year,
+                Index = record.Index.GetCaption(),
+                Type = record.Type != null ? record.Type.GetCaption() : string.Empty,
+                Q = record.QRank != null ? record.QRank.GetCaption() : string.Empty,
+                Category = record.Category,
+                IF = record.If,
+                Mif = record.Mif,
+                Aif = record.Aif,
+                Journal = new JournalModel
                 {
-                    Year = record.Year,
-                    Index = record.Index.GetCaption(),
-                    Type = record.Type != null ? record.Type.GetCaption() : string.Empty,
-                    Q = record.QRank != null ? record.QRank.GetCaption() : string.Empty,
-                    Category = record.Category,
-                    IF = record.If,
-                    Mif = record.Mif,
-                    Aif = record.Aif,
-                    Journal = new JournalModel
-                    {
-                        Title = record.Journal.Title,
-                        ISSN = record.Journal.Issn,
-                        WebSite = record.Journal.WebSite,
-                        Publisher = record.Journal.Publisher,
-                        Country = record.Journal.Country
-                    }
-                })
-                .ToList();
+                    Title = record.Journal.Title,
+                    ISSN = record.Journal.Issn,
+                    WebSite = record.Journal.WebSite,
+                    Publisher = record.Journal.Publisher,
+                    Country = record.Journal.Country
+                }
+            })
+            .ToList();
 
-            return new(recordsList.Where(a => a.Year == recordsList.Max(x => x.Year)));
-        }
+        return new List<RecordModel>(recordsList.Where(a => a.Year == recordsList.Max(x => x.Year)));
     }
 }

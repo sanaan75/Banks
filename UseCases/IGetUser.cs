@@ -1,5 +1,3 @@
-using Web.Models;
-
 namespace Web;
 
 public interface IGetUser

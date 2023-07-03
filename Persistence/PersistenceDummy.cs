@@ -1,7 +1,5 @@
-﻿namespace Persistence
-{
-    public class PersistenceDummy
-    {
+﻿namespace Persistence;
 
-    }
+public class PersistenceDummy
+{
 }

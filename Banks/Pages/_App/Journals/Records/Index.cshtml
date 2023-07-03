@@ -16,7 +16,7 @@
                         </h4>
                     </div>
                     <div class="col-6 text-right">
-                        <a class="btn btn-outline-dark" asp-page="@PageUrl.Journals" >
+                        <a class="btn btn-outline-dark" asp-page="@PageUrl.Journals">
                             @Glossary.Back
                         </a>
                     </div>
@@ -69,38 +69,38 @@
             <div class="card-body">
                 <table id="example1" class="table table-striped table-bordered" width="100%">
                     <thead>
-                        <tr>
-                            <th>شناسه</th>
-                            <th>نام مجله</th>
-                            <th> دسته</th>
-                            <th>سال</th>
-                            <th>نمایه</th>
-                            <th>نوع</th>
-                            <th>رتبه</th>
-                            <th>IF</th>
-                            <th>MIF</th>
-                            <th>AIF</th>
-                        </tr>
+                    <tr>
+                        <th>شناسه</th>
+                        <th>نام مجله</th>
+                        <th> دسته</th>
+                        <th>سال</th>
+                        <th>نمایه</th>
+                        <th>نوع</th>
+                        <th>رتبه</th>
+                        <th>IF</th>
+                        <th>MIF</th>
+                        <th>AIF</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        @if (Model.JournalRecords.Any())
+                    @if (Model.JournalRecords.Any())
+                    {
+                        foreach (var record in Model.JournalRecords)
                         {
-                            foreach (var record in Model.JournalRecords)
-                            {
-                                <tr>
-                                    <td>@record.Id</td>
-                                    <td>@record.JournalTitle</td>
-                                    <td>@record.Category</td>
-                                    <td>@record.Year</td>
-                                    <td>@record.Index</td>
-                                    <td>@record.Type</td>
-                                    <td>@record.QRank</td>
-                                    <td>@record.If</td>
-                                    <td>@record.Mif</td>
-                                    <td>@record.Aif</td>
-                                </tr>
-                            }
+                            <tr>
+                                <td>@record.Id</td>
+                                <td>@record.JournalTitle</td>
+                                <td>@record.Category</td>
+                                <td>@record.Year</td>
+                                <td>@record.Index</td>
+                                <td>@record.Type</td>
+                                <td>@record.QRank</td>
+                                <td>@record.If</td>
+                                <td>@record.Mif</td>
+                                <td>@record.Aif</td>
+                            </tr>
                         }
+                    }
                     </tbody>
                 </table>
             </div>

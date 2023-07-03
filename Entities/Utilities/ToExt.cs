@@ -1,45 +1,42 @@
-﻿using System;
+﻿namespace Entities.Utilities;
 
-namespace Entities
+public static class ToExt
 {
-    public static class ToExt
+    public static T To<T>(this object obj) where T : struct
     {
-        public static T To<T>(this object obj) where T : struct
+        return obj.To(default(T));
+    }
+
+    public static T To<T>(this object obj, T defaultValue) where T : struct
+    {
+        var result = obj.ToNullable<T>();
+        return result ?? defaultValue;
+    }
+
+    public static T? ToNullable<T>(this object obj) where T : struct
+    {
+        if (obj == null)
+            return null;
+
+        try
         {
-            return obj.To(default(T));
+            return (T)Convert.ChangeType(obj, typeof(T));
         }
-
-        public static T To<T>(this object obj, T defaultValue) where T : struct
+        catch
         {
-            var result = obj.ToNullable<T>();
-            return result ?? defaultValue;
-        }
-
-        public static T? ToNullable<T>(this object obj) where T : struct
-        {
-            if (obj == null)
-                return null;
-
             try
             {
-                return (T)Convert.ChangeType(obj, typeof(T));
+                return (T)obj;
             }
-            catch
+            catch (Exception)
             {
                 try
                 {
-                    return (T)obj;
+                    return Enum.Parse(typeof(T), obj.ToString()).To<T>();
                 }
                 catch (Exception)
                 {
-                    try
-                    {
-                        return Enum.Parse(typeof(T), obj.ToString()).To<T>();
-                    }
-                    catch (Exception)
-                    {
-                        return null;
-                    }
+                    return null;
                 }
             }
         }

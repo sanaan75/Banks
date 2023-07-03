@@ -1,4 +1,5 @@
 ﻿using Entities.Journals;
+using Entities.Utilities;
 
 namespace Entities.Models;
 
@@ -20,6 +21,8 @@ public class ArticleModel
     public List<string> Categories { get; set; }
     public decimal? IF { get; set; }
     public JournalIndex? Index { get; set; }
+    public string IndexCaption => Index.GetCaption();
     public decimal? Mif { get; set; }
     public JournalQRank? QRank { get; set; }
+    public string QRankCaption => QRank.GetCaption();
 }

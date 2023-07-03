@@ -1,22 +1,19 @@
 using System.Reflection;
-using Framework;
+using Entities;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 using NetCore.AutoRegisterDi;
 using Persistence;
 using UseCases;
+using Web.Jwt;
+using AppContext = Persistence.AppContext;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<Persistence.AppContext>(opts =>
+builder.Services.AddDbContext<AppContext>(opts =>
 {
     opts.UseSqlServer(builder.Configuration["ConnectionStrings:MainConnection"]);
-});
-
-builder.Services.AddDbContext<FileContext>(opts =>
-{
-    opts.UseSqlServer(builder.Configuration["ConnectionStrings:FileConnection"]);
 });
 
 builder.Services.AddRazorPages();
@@ -27,7 +24,9 @@ builder.Services.RegisterAssemblyPublicNonGenericClasses(GetAssembliesToBeRegist
 
 builder.Services.AddCors();
 
-builder.Services.AddSession(options => { options.IdleTimeout = TimeSpan.FromMinutes(150); });
+builder.Services.AddSession(options => { options.IdleTimeout = TimeSpan.FromMinutes(120); });
+
+builder.Services.AddJwtServices(opt => opt.AllowUserAccountNo = AppSetting.AllowUserAccountNo);
 
 builder.Services.Configure<FormOptions>(options =>
 {
@@ -37,7 +36,6 @@ builder.Services.Configure<FormOptions>(options =>
 });
 
 var app = builder.Build();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -54,12 +52,10 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.UseSession();
 
-app.Map("/api", ApiCheck);
+//app.Map("/api", ApiCheck); //todo : remove on test
 
 app.UseCors(x => x
     .AllowAnyMethod()
@@ -81,8 +77,7 @@ Assembly[] GetAssembliesToBeRegisteredInIocContainer()
     {
         typeof(UseCasesDummy).Assembly,
         typeof(PersistenceDummy).Assembly,
-        typeof(FrameworkDummy).Assembly,
-        typeof(WebDummy).Assembly,
+        typeof(WebDummy).Assembly
     };
 }
 
@@ -96,7 +91,7 @@ static void ApiCheck(IApplicationBuilder app)
             context.Request.Headers.TryGetValue("JiroToken", out headerValue);
 
             var headerValueResult = headerValue.FirstOrDefault();
-            string Api_Key = "$Jiro" + DateTime.Now.Minute + DateTime.Now.Hour + "6342";
+            var Api_Key = "$Jiro" + DateTime.Now.Minute + DateTime.Now.Hour + "6342";
 
             if (headerValueResult == null || headerValueResult.Equals(Api_Key) == false)
             {

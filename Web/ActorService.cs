@@ -18,7 +18,7 @@ public class ActorService : ActorServiceTemplate
             return _actor;
 
         if (SessionActorExt._actor.IsAuthenticated == false)
-            return new Actor {IsAuthenticated = false};
+            return new Actor { IsAuthenticated = false };
 
         return SessionActorExt._actor;
     }

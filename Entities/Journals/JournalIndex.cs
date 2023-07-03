@@ -1,4 +1,6 @@
-﻿namespace Entities.Journals;
+﻿using Entities.Utilities;
+
+namespace Entities.Journals;
 
 public enum JournalIndex
 {

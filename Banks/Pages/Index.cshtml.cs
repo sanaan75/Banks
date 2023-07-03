@@ -16,7 +16,7 @@ public class IndexModel : PageModel
     public RedirectToPageResult OnGet()
     {
         var actor = HttpContext.Session.GetActor();
-        if (actor.IsAuthenticated==true)
+        if (actor.IsAuthenticated)
             return RedirectToPage(PageUrl.Home);
 
         return RedirectToPage(PageUrl.Login);

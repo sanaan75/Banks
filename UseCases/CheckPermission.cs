@@ -1,23 +1,22 @@
 ﻿using Entities.Permissions;
 
-namespace UseCases
+namespace UseCases;
+
+public class CheckPermission : ICheckPermission
 {
-    public class CheckPermission : ICheckPermission
+    private readonly IActorService _actorService;
+
+    public CheckPermission(IActorService actorService)
     {
-        private IActorService _actorService;
+        _actorService = actorService;
+    }
 
-        public CheckPermission(IActorService actorService)
-        {
-            _actorService = actorService;
-        }
+    public bool Respond(List<Permission> permissions, Permission permission)
+    {
+        var actor = _actorService.GetActor();
+        if (actor.IsSysAdmin)
+            return true;
 
-        public bool Respond(List<Permission> permissions, Permission permission)
-        {
-            var actor = _actorService.GetActor();
-            if (actor.IsSysAdmin)
-                return true;
-
-            return permissions.Contains(permission);
-        }
+        return permissions.Contains(permission);
     }
 }

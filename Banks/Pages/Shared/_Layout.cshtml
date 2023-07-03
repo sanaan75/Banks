@@ -4,7 +4,7 @@
 @using Entities.Permissions
 @inject ILogin Login
 @inject ICheckPermission CheckPermission
-@inject IMenuHelper menuHelper
+@inject IMenuHelper MenuHelper
 @inject IGetUser GetUser
 <!DOCTYPE html>
 <html lang="fa" dir="rtl" id="html">
@@ -103,7 +103,50 @@ justify-content: flex-start;
 .dataTables_filter label {
     width: 100%;
 }
+
+    #snackbar {
+      visibility: hidden;
+      min-width: 250px;
+      margin-left: -125px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 2px;
+      padding: 16px;
+      position: fixed;
+      z-index: 1;
+      left: 50%;
+      bottom: 30px;
+      font-size: 17px;
+    }
+    
+    #snackbar.show {
+      visibility: visible;
+      -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+      animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+    
+    @@-webkit-keyframes fadein {
+      from {bottom: 0; opacity: 0;} 
+      to {bottom: 30px; opacity: 1;}
+    }
+    
+    @@keyframes fadein {
+      from {bottom: 0; opacity: 0;}
+      to {bottom: 30px; opacity: 1;}
+    }
+    
+    @@-webkit-keyframes fadeout {
+      from {bottom: 30px; opacity: 1;} 
+      to {bottom: 0; opacity: 0;}
+    }
+    
+    @@keyframes fadeout {
+      from {bottom: 30px; opacity: 1;}
+      to {bottom: 0; opacity: 0;}
+    }
     </style>
+    @* @RenderSection("Styles", false) *@
 </head>
 
 <body class="" id="body" onload="openFullscreen()">
@@ -173,7 +216,7 @@ justify-content: flex-start;
 
         <div class="navigation-menu-body">
 
-            <ul class="@{@Html.Raw(menuHelper.Respond(Menu.Home))}" id="Home">
+            <ul class="@{@Html.Raw(MenuHelper.Respond(Menu.Home))}" id="Home">
                 <li class="navigation-divider">
                     <h5>
                         <a href="@PageUrl.Home">@Glossary.Home</a>
@@ -184,7 +227,7 @@ justify-content: flex-start;
                 </li>
             </ul>
 
-            <ul class="@{@Html.Raw(menuHelper.Respond(Menu.Users))}" id="Users">
+            <ul class="@{@Html.Raw(MenuHelper.Respond(Menu.Users))}" id="Users">
                 <li class="navigation-divider">
                     <h5>@Glossary.Users</h5>
                 </li>
@@ -196,7 +239,7 @@ justify-content: flex-start;
                 </li>
             </ul>
 
-            <ul class="@{@Html.Raw(menuHelper.Respond(Menu.Journal))}" id="Journals">
+            <ul class="@{@Html.Raw(MenuHelper.Respond(Menu.Journal))}" id="Journals">
                 <li class="navigation-divider">
                     <h5>@Glossary.Journals</h5>
                 </li>
@@ -220,7 +263,7 @@ justify-content: flex-start;
                 </li>
             </ul>
 
-            <ul class="@{@Html.Raw(menuHelper.Respond(Menu.Reports))}" id="Reports">
+            <ul class="@{@Html.Raw(MenuHelper.Respond(Menu.Reports))}" id="Reports">
                 <li class="navigation-divider">
                     <h5>@Glossary.Reports</h5>
                 </li>
@@ -229,7 +272,7 @@ justify-content: flex-start;
                 @* </li> *@
             </ul>
 
-            <ul class="@{@Html.Raw(menuHelper.Respond(Menu.Permissions))}" id="Permissions">
+            <ul class="@{@Html.Raw(MenuHelper.Respond(Menu.Permissions))}" id="Permissions">
                 <li class="navigation-divider">
                     <h5>@Glossary.Permissions</h5>
                 </li>
@@ -261,7 +304,7 @@ justify-content: flex-start;
 
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb text-white">
-                        @foreach (var item in menuHelper.GetBreadcrumb())
+                        @foreach (var item in MenuHelper.GetBreadcrumb())
                         {
                             <li class="breadcrumb-item text-white">
                                 <a href="@item.URL" class="mx-1 text-white">
@@ -311,6 +354,7 @@ justify-content: flex-start;
     </div>
     <main class="main-content mt-2">
 
+        <div id="snackbar"></div>
         @RenderBody()
 
     </main>
@@ -396,7 +440,8 @@ currentTime();
     </script>
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
-
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>
 @await RenderSectionAsync("Scripts", false)
 
 </body>

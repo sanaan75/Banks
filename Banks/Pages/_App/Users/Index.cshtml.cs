@@ -1,69 +1,70 @@
-using Entities;
-using Framework;
+using Entities.Journals;
+using Entities.Utilities;
+using UseCases.Interfaces;
 using Web.RazorPages;
 
-namespace Banks.Pages._App.Users
+namespace Banks.Pages._App.Users;
+
+public class Index : AppPageModel
 {
-    public class Index : AppPageModel
+    private readonly IDb _db;
+
+    public Index(IDb db)
     {
-        private readonly IUnitOfWork _unitOfWork;
+        _db = db;
+    }
 
-        public List<RecordModel> JournalRecords { get; set; }
-        public DataItem AddJournalInfo { get; set; }
+    public List<RecordModel> JournalRecords { get; set; }
+    public DataItem AddJournalInfo { get; set; }
 
-        public Index(IUnitOfWork unitOfWork)
+    public void OnGet(int id)
+    {
+        var journal = _db.Query<Journal>().GetById(id);
+        AddJournalInfo = new DataItem
         {
-            _unitOfWork = unitOfWork;
-        }
-        public void OnGet(int id)
+            Id = journal.Id,
+            Title = journal.Title,
+            Website = journal.WebSite,
+            Publisher = journal.Publisher,
+            Country = journal.Country
+        };
+
+        JournalRecords = _db.Query<JournalRecord>().Where(i => i.JournalId == id).Select(i => new RecordModel
         {
-            var journal = _unitOfWork.Journals.GetById(id);
-            AddJournalInfo = new DataItem
-            {
-                Id = journal.Id,
-                Title = journal.Title,
-                Website = journal.WebSite,
-                Publisher = journal.Publisher,
-                Country = journal.Country
-            };
+            Id = i.Id,
+            JournalTitle = i.Journal.Title,
+            Category = i.Category,
+            Year = i.Year,
+            Index = i.Index.GetCaption(),
+            Type = i.Type!.GetCaption(),
+            QRank = i.QRank!.GetCaption(),
+            If = i.If,
+            Mif = i.Mif,
+            Aif = i.Aif
+        }).ToList();
+    }
+}
 
-            JournalRecords = _unitOfWork.JournalRecords.Find(i => i.JournalId == id).Select(i => new RecordModel
-            {
-                Id = i.Id,
-                JournalTitle = i.Journal.Title,
-                Category = i.Category,
-                Year = i.Year,
-                Index = i.Index.GetCaption(),
-                Type = i.Type.GetCaption(),
-                QRank = i.QRank.GetCaption(),
-                If = i.If,
-                Mif = i.Mif,
-                Aif = i.Aif
-            }).ToList();
-        }
-    }
+public class RecordModel
+{
+    public int Id { get; set; }
+    public string JournalTitle { get; set; }
+    public string Category { get; set; }
+    public int Year { get; set; }
+    public string Index { get; set; }
+    public string Type { get; set; }
+    public string QRank { get; set; }
+    public decimal? If { get; set; }
+    public decimal? Mif { get; set; }
+    public decimal? Aif { get; set; }
+}
 
-    public class RecordModel
-    {
-        public int Id { get; set; }
-        public string JournalTitle { get; set; }
-        public string Category { get; set; }
-        public int Year { get; set; }
-        public string Index { get; set; }
-        public string Type { get; set; }
-        public string QRank { get; set; }
-        public decimal? If { get; set; }
-        public decimal? Mif { get; set; }
-        public decimal? Aif { get; set; }
-    }
-    
-    public class DataItem
-    {
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public string ISSN { get; set; }
-        public string Website { get; set; }
-        public string Publisher { get; set; }
-        public string Country { get; set; }
-    }
+public class DataItem
+{
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public string ISSN { get; set; }
+    public string? Website { get; set; }
+    public string? Publisher { get; set; }
+    public string? Country { get; set; }
 }

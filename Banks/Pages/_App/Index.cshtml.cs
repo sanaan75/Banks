@@ -1,6 +1,8 @@
 ﻿using Entities;
+using Entities.Journals;
 using Entities.Permissions;
-using Framework;
+using Entities.Users;
+using UseCases.Interfaces;
 using Web;
 using Web.Models;
 using Web.RazorPages;
@@ -9,24 +11,24 @@ namespace Banks.Pages._App;
 
 public class Index : AppPageModel
 {
+    private readonly IDb _db;
     private readonly IMenuHelper _menuHelper;
-    private readonly IUnitOfWork _unitOfWork;
 
-    public Index(IUnitOfWork unitOfWork, IMenuHelper menuHelper)
+    public Index(IDb db, IMenuHelper menuHelper)
     {
-        _unitOfWork = unitOfWork;
+        _db = db;
         _menuHelper = menuHelper;
         AppSetting.SelectedMenu = Menu.Home;
         _menuHelper.SetBreadcrumb(new List<string> { ResourceKey.Home });
     }
 
     public MainPageModel MainPageModel { get; set; }
-    public int journals { get; set; }
-    public int users { get; set; }
+    public int Journals { get; set; }
+    public int Users { get; set; }
 
     public void OnGet()
     {
-        journals = _unitOfWork.Journals.GetAll().Count();
-        users = _unitOfWork.Users.GetAll().Count();
+        Journals = _db.Query<Journal>().Count();
+        Users = _db.Query<User>().Count();
     }
 }

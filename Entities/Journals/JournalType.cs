@@ -1,9 +1,8 @@
-﻿namespace Entities.Journals
+﻿namespace Entities.Journals;
+
+public enum JournalType
 {
-    public enum JournalType
-    {
-        ElmiPazhuheshi = 1,
-         ElmiTarviji = 2,
-         DaneshNameh = 4,
-    }
+    ElmiPazhuheshi = 1,
+    ElmiTarviji = 2,
+    DaneshNameh = 4
 }

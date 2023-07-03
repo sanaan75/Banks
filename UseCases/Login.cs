@@ -1,72 +1,74 @@
 ﻿using Entities;
 using Entities.Helpers;
-using Framework;
-using System.Linq;
+using Entities.Permissions;
+using Entities.Users;
+using UseCases.Interfaces;
 
-namespace UseCases
+namespace UseCases;
+
+public class Login : ILogin
 {
-    public class Login : ILogin
+    private readonly IActorService _actorService;
+    private readonly IDb _db;
+
+    public Login(IDb db, IActorService actorService)
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IActorService _actorService;
-        
-        public Login(IUnitOfWork unitOfWork, IActorService actorService)
-        {
-            _unitOfWork = unitOfWork;
-            _actorService = actorService;
-        }
+        _db = db;
+        _actorService = actorService;
+    }
 
-        public Actor Respond(string username, string password)
+    public Actor Respond(string username, string password)
+    {
+        try
         {
-            try
+            var users = _db.Query<User>().ToList();
+            var user = _db.Query<User>().Where(i => i.Username == username).FirstOrDefault(i => i.SysAdmin == true);
+            if (user != null)
             {
-                var users = _unitOfWork.Users.GetAll().ToList();
-                var user = _unitOfWork.Users.Find(i => i.Username == username).FirstOrDefault(i => i.SysAdmin == true);
-                if (user != null)
+                var hashedPass = HashPassword.Hash(username, password);
+                if (hashedPass.Equals(user.Password))
                 {
-                    var hashedPass = HashPassword.Hash(username, password);
-                    if (hashedPass.Equals(user.Password))
-                    {
-                        var permissions = _unitOfWork.UserGroupPermissions.GetAll()
-                            .Where(i => i.UserGroupId == user.UserGroupId)
-                            .Select(i => i.Permission).ToList();
-                        
-                        var actor = new Actor
-                        {
-                            IsAuthenticated = true,
-                            UserId = user.Id,
-                            IsSysAdmin = user.SysAdmin,
-                            Permissions = permissions,
-                            FullName = user.Title
-                        };
+                    var permissions = _db.Query<UserGroupPermission>()
+                        .Where(i => i.UserGroupId == user.UserGroupId)
+                        .Select(i => i.Permission).ToList();
 
-                        _actorService.SetActor(actor);
-                        return actor;
-                    }
+                    var actor = new Actor
+                    {
+                        IsAuthenticated = true,
+                        UserId = user.Id,
+                        IsSysAdmin = user.SysAdmin,
+                        Permissions = permissions,
+                        FullName = user.Title
+                    };
+
+                    _actorService.SetActor(actor);
+                    return actor;
                 }
             }
-            catch (Exception ex)
-            {
-
-            }
-            return new Actor
-            {
-                IsAuthenticated = false
-            };
         }
-
-        public Actor GetActor()
+        catch (Exception ex)
         {
-            try
-            {
-                if (_actorService.IsAuthenticated)
-                    return _actorService.GetActor();
-            }
-            catch
-            {
-                // ignored
-            }
-            return null;
+            //ignored
         }
+
+        return new Actor
+        {
+            IsAuthenticated = false
+        };
+    }
+
+    public Actor GetActor()
+    {
+        try
+        {
+            if (_actorService.IsAuthenticated)
+                return _actorService.GetActor();
+        }
+        catch
+        {
+            // ignored
+        }
+
+        return null;
     }
 }

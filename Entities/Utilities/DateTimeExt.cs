@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Entities;
+namespace Entities.Utilities;
 
 public static class DateTimeExt
 {
@@ -11,8 +11,8 @@ public static class DateTimeExt
             if (dateTime == null)
                 return "";
 
-            PersianCalendar pc = new PersianCalendar();
-            string persianDate = $"{pc.GetYear(dateTime)}/{pc.GetMonth(dateTime)}/{pc.GetDayOfMonth(dateTime)}";
+            var pc = new PersianCalendar();
+            var persianDate = $"{pc.GetYear(dateTime)}/{pc.GetMonth(dateTime)}/{pc.GetDayOfMonth(dateTime)}";
             return persianDate;
         }
         catch

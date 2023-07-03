@@ -1,5 +1,6 @@
 using Entities;
 using Entities.Permissions;
+using Entities.Utilities;
 
 namespace Web;
 

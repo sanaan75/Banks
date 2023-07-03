@@ -1,10 +1,9 @@
-﻿namespace Entities
+﻿namespace Entities.Utilities;
+
+public static class BooleanExt
 {
-    public static class BooleanExt
+    public static string ToYesNo(this bool b)
     {
-        public static string ToYesNo(this bool b)
-        {
-            return b ? "بله" : "خیر";
-        }
+        return b ? "بله" : "خیر";
     }
 }

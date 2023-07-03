@@ -1,40 +1,39 @@
 ﻿using System.Text;
 
-namespace Entities
+namespace Entities.Utilities;
+
+public static class StringExt
 {
-    public static class StringExt
+    public static string Join(this IEnumerable<string> items, string delim)
     {
-        public static string Join(this IEnumerable<string> items, string delim)
-        {
-            return StringHelper.Join(delim, items);
-        }
+        return StringHelper.Join(delim, items);
+    }
 
-        public static DateTime? GetDate(this string date)
-        {
-            return StringHelper.GetDate(date);
-        }
+    public static DateTime? GetDate(this string date)
+    {
+        return StringHelper.GetDate(date);
+    }
 
-        public static string JoinByComma(this IList<string> items)
-        {
-            if (items == null || items.Count == 0)
-                return string.Empty;
+    public static string JoinByComma(this IList<string> items)
+    {
+        if (items == null || items.Count == 0)
+            return string.Empty;
 
-            if (items.Count == 1)
-                return items.Single();
+        if (items.Count == 1)
+            return items.Single();
 
-            var result = new StringBuilder();
+        var result = new StringBuilder();
 
-            for (var i = 0; i < items.Count - 1; i++)
-                result.Append(items[i] + "، ");
+        for (var i = 0; i < items.Count - 1; i++)
+            result.Append(items[i] + "، ");
 
-            result.Append("و " + items.Last());
+        result.Append("و " + items.Last());
 
-            return result.ToString();
-        }
+        return result.ToString();
+    }
 
-        public static byte[] ToUtf8Bytes(this string str)
-        {
-            return new UTF8Encoding().GetBytes(str);
-        }
+    public static byte[] ToUtf8Bytes(this string str)
+    {
+        return new UTF8Encoding().GetBytes(str);
     }
 }

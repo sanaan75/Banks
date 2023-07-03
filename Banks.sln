@@ -4,8 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Banks", "Banks\Banks.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entities", "Entities\Entities.csproj", "{38D048D9-3325-45C4-B596-E4F89E6193A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frameworks", "Frameworks\Frameworks.csproj", "{CF8BA063-E5F8-4E75-ACAF-23789452145D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UseCases", "UseCases\UseCases.csproj", "{3107D79A-00AD-43F9-9EC9-B75E1AF11917}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistence", "Persistence\Persistence.csproj", "{3F9D1048-617A-4824-940C-BABACFCB2A6B}"
@@ -26,10 +24,6 @@ Global
 		{38D048D9-3325-45C4-B596-E4F89E6193A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38D048D9-3325-45C4-B596-E4F89E6193A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38D048D9-3325-45C4-B596-E4F89E6193A5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CF8BA063-E5F8-4E75-ACAF-23789452145D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CF8BA063-E5F8-4E75-ACAF-23789452145D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CF8BA063-E5F8-4E75-ACAF-23789452145D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CF8BA063-E5F8-4E75-ACAF-23789452145D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3107D79A-00AD-43F9-9EC9-B75E1AF11917}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3107D79A-00AD-43F9-9EC9-B75E1AF11917}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3107D79A-00AD-43F9-9EC9-B75E1AF11917}.Release|Any CPU.ActiveCfg = Release|Any CPU

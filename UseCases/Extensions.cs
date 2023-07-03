@@ -1,79 +1,77 @@
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Reflection;
 
-namespace UseCases
+namespace UseCases;
+
+public static class Extensions
 {
-    public static class Extensions
+    public static List<T> ToList<T>(this DataTable table) where T : new()
     {
-        public static List<T> ToList<T>(this DataTable table) where T : new()
+        IList<PropertyInfo> properties = typeof(T).GetProperties().ToList();
+        var result = new List<T>();
+
+        foreach (var row in table.Rows)
         {
-            IList<PropertyInfo> properties = typeof(T).GetProperties().ToList();
-            List<T> result = new List<T>();
-
-            foreach (var row in table.Rows)
-            {
-                var item = CreateItemFromRow<T>((DataRow)row, properties);
-                result.Add(item);
-            }
-
-            return result;
+            var item = CreateItemFromRow<T>((DataRow)row, properties);
+            result.Add(item);
         }
 
-        public static List<T> SetToList<T>(this DataSet dataSet) where T : new()
+        return result;
+    }
+
+    public static List<T> SetToList<T>(this DataSet dataSet) where T : new()
+    {
+        IList<PropertyInfo> properties = typeof(T).GetProperties().ToList();
+        var result = new List<T>();
+
+        foreach (var row in dataSet.Tables[0].Rows)
         {
-            IList<PropertyInfo> properties = typeof(T).GetProperties().ToList();
-            List<T> result = new List<T>();
-
-            foreach (var row in dataSet.Tables[0].Rows)
-            {
-                var item = CreateItemFromRow<T>((DataRow)row, properties);
-                result.Add(item);
-            }
-
-            return result;
+            var item = CreateItemFromRow<T>((DataRow)row, properties);
+            result.Add(item);
         }
 
-        private static T CreateItemFromRow<T>(DataRow row, IList<PropertyInfo> properties) where T : new()
-        {
-            T item = new T();
-            foreach (var property in properties)
+        return result;
+    }
+
+    private static T CreateItemFromRow<T>(DataRow row, IList<PropertyInfo> properties) where T : new()
+    {
+        var item = new T();
+        foreach (var property in properties)
+            if (property.PropertyType == typeof(DayOfWeek))
             {
-                if (property.PropertyType == typeof(System.DayOfWeek))
+                var day = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), row[property.Name].ToString());
+                property.SetValue(item, day, null);
+            }
+            else
+            {
+                if (row[property.Name] == DBNull.Value)
                 {
-                    DayOfWeek day = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), row[property.Name].ToString());
-                    property.SetValue(item, day, null);
+                    property.SetValue(item, null, null);
                 }
                 else
                 {
-                    if (row[property.Name] == DBNull.Value)
-                        property.SetValue(item, null, null);
+                    if (Nullable.GetUnderlyingType(property.PropertyType) != null)
+                    {
+                        //nullable
+                        object convertedValue = null;
+                        try
+                        {
+                            convertedValue = Convert.ChangeType(row[property.Name],
+                                Nullable.GetUnderlyingType(property.PropertyType));
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+
+                        property.SetValue(item, convertedValue, null);
+                    }
                     else
                     {
-                        if (Nullable.GetUnderlyingType(property.PropertyType) != null)
-                        {
-                            //nullable
-                            object convertedValue = null;
-                            try
-                            {
-                                convertedValue = System.Convert.ChangeType(row[property.Name],
-                                    Nullable.GetUnderlyingType(property.PropertyType));
-                            }
-                            catch (Exception ex)
-                            {
-                            }
-
-                            property.SetValue(item, convertedValue, null);
-                        }
-                        else
-                            property.SetValue(item, row[property.Name], null);
+                        property.SetValue(item, row[property.Name], null);
                     }
                 }
             }
 
-            return item;
-        }
+        return item;
     }
 }

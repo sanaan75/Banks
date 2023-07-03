@@ -1,7 +1,7 @@
 ﻿@page
-@model Banks.Pages._App.Journals.Records.Create
-@using Entities
 @using Web
+@using Entities
+@model Banks.Pages._App.Journals.Records.Create
 @{
 }
 
@@ -48,7 +48,7 @@
                 <div class="row mt-2">
                     <div class="col-12 px-5">
                         <form method="post">
-                            <input type="hidden" asp-for="@Model.RecordModel.JournalId" value="@Model.JournalId" />
+                            <input type="hidden" asp-for="@Model.RecordModel.JournalId" value="@Model.JournalId"/>
                             <div class="form-group mb-3">
                                 <label asp-for="@Model.RecordModel.Category" class="text-right"></label>
                                 <input type="text" asp-for="@Model.RecordModel.Category" class="form-control text-left" dir="ltr">

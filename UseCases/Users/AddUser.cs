@@ -1,34 +1,31 @@
 ﻿using Entities.Helpers;
 using Entities.Users;
-using Framework;
-using System.Linq;
+using UseCases.Interfaces;
 
-namespace UseCases.Users
+namespace UseCases.Users;
+
+public class AddUser : IAddUser
 {
-    public class AddUser : IAddUser
+    private readonly IDb _db;
+
+    public AddUser(IDb db)
     {
-        private readonly IUnitOfWork _unitOfWork;
+        _db = db;
+    }
 
-        public AddUser(IUnitOfWork unitOfWork)
-        {            
-            _unitOfWork = unitOfWork;
-        }
+    public User Responce(IAddUser.Request request)
+    {
+        var userExist = _db.Query<User>().SingleOrDefault(i => i.Username == request.UserName);
 
-        public User Responce(IAddUser.Request request)
+        Check.Null(userExist, () => "کاربر قبلا تعریف شده است");
+
+        return _db.Set<User>().Add(new User
         {
-            var userExist = _unitOfWork.Users.Find(i => i.Username == request.UserName).SingleOrDefault();
-
-            Check.Null(userExist, () => "کاربر قبلا تعریف شده است");
-
-            return _unitOfWork.Users.Add(new User
-            {
-                Title = request.Title,
-                Username = request.UserName,
-                Password = HashPassword.Hash(request.UserName, request.Password),
-                Enabled = request.Enabled,
-                SysAdmin = request.SysAdmin
-            });          
-
-        }
+            Title = request.Title,
+            Username = request.UserName,
+            Password = HashPassword.Hash(request.UserName, request.Password),
+            Enabled = request.Enabled,
+            SysAdmin = request.SysAdmin
+        }).Entity;
     }
 }

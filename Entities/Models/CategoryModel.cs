@@ -1,10 +1,9 @@
 ﻿using Entities.Journals;
 
-namespace Entities.Models
+namespace Entities.Models;
+
+public class CategoryModel
 {
-    public class CategoryModel
-    {
-        public string Title { get; set; }
-        public JournalQRank? Rank { get; set; }
-    }
+    public string Title { get; set; }
+    public JournalQRank? Rank { get; set; }
 }

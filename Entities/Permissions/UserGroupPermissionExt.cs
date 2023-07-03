@@ -1,17 +1,17 @@
-﻿using System.Linq;
+﻿using Entities.Utilities;
 
-namespace Entities.Permissions
+namespace Entities.Permissions;
+
+public static class UserGroupPermissionExt
 {
-    public static class UserGroupPermissionExt
+    public static IQueryable<UserGroupPermission> FilterByUserGroup(this IQueryable<UserGroupPermission> items, int? id)
     {
-        public static IQueryable<UserGroupPermission> FilterByUserGroup(this IQueryable<UserGroupPermission> items, int? id)
-        {
-            return items.Filter(id, i => i.UserGroupId == id.Value);
-        }
+        return items.Filter(id, i => i.UserGroupId == id.Value);
+    }
 
-        public static IQueryable<UserGroupPermission> FilterByPermission(this IQueryable<UserGroupPermission> items, Permission? value)
-        {
-            return items.Filter(value, i => i.Permission == value.Value);
-        }
+    public static IQueryable<UserGroupPermission> FilterByPermission(this IQueryable<UserGroupPermission> items,
+        Permission? value)
+    {
+        return items.Filter(value, i => i.Permission == value.Value);
     }
 }

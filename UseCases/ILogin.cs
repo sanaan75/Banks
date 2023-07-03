@@ -1,14 +1,10 @@
-﻿using System.Linq;
-using System.Net.Cache;
-using Entities;
-using Entities.Journals;
+﻿using Entities;
 
-namespace UseCases
+namespace UseCases;
+
+public interface ILogin
 {
-    public interface ILogin
-    {
-        public Actor Respond(string username, string password);
+    public Actor Respond(string username, string password);
 
-        public Actor GetActor();
-    }
+    public Actor GetActor();
 }

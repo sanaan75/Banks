@@ -1,14 +1,14 @@
-﻿using Framework;
+﻿using UseCases.Interfaces;
 
 namespace UseCases;
 
 public class GetFileByte : IGetFileByte
 {
-    private IUnitOfWork _unitOfWork;
+    private IDb _db;
 
-    public GetFileByte(IUnitOfWork unitOfWork)
+    public GetFileByte(IDb db)
     {
-        _unitOfWork = unitOfWork;
+        _db = db;
     }
 
     public string Respond(int? id)

@@ -1,7 +1,5 @@
-﻿namespace UseCases
-{
-    public class WebDummy
-    {
+﻿namespace UseCases;
 
-    }
+public class WebDummy
+{
 }
