@@ -89,11 +89,10 @@ static void ApiCheck(IApplicationBuilder app)
         {
             StringValues headerValue;
             context.Request.Headers.TryGetValue("JiroToken", out headerValue);
-
             var headerValueResult = headerValue.FirstOrDefault();
-            var Api_Key = "$Jiro" + DateTime.Now.Minute + DateTime.Now.Hour + "6342";
+            //var Api_Key = "$Jiro" + DateTime.Now.Minute + DateTime.Now.Hour + "6342";
 
-            if (headerValueResult == null || headerValueResult.Equals(Api_Key) == false)
+            if (headerValueResult == null || headerValueResult.Equals(AppSetting.Api_Key) == false)
             {
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsync("Unauthorized");

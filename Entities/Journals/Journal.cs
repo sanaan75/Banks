@@ -4,6 +4,7 @@ namespace Entities.Journals;
 
 public class Journal : IEntity
 {
+    public int Id { get; set; }
     public string Title { get; set; }
     public string? Issn { get; set; }
     public string? EIssn { get; set; }
@@ -17,5 +18,4 @@ public class Journal : IEntity
     public int? LastUpdaterId { get; set; }
     public User LastUpdater { get; set; }
     public ICollection<JournalRecord> Records { get; set; }
-    public int Id { get; set; }
 }

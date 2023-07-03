@@ -24,7 +24,7 @@ public class JournalController : ControllerBase
 
     [Route("GetRecords")]
     [HttpGet]
-    public JsonResult GetRecords(int year, string title, string issn, string category)
+    public JsonResult GetRecords(int year, string? title, string? issn, string? category)
     {
         var recordsList = _findJournal.Respond(new IFindJournal.Request
         {

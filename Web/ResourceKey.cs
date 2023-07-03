@@ -14,6 +14,7 @@ public static class ResourceKey
     public const string InfoJournal = "InfoJournal";
     public const string UpdateJournal = "UpdateJournal";
     public const string SearchJournals = "SearchJournals";
+    public const string Vezaratain = "Vezaratain";
 
     public const string Users = "Users";
     public const string AddUser = "AddUser";

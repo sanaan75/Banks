@@ -1,0 +1,43 @@
+@page
+@model Banks.Pages._App.Journals.Vezaratain
+
+<div class="row mt-5">
+    <div class="col-12 px-3">
+        <div class="card">
+            <div class="card-body">
+                <form enctype="multipart/form-data" method="post">
+                    <div class="col-12 text-center py-3">
+                        <h3 class="text-center"> وارد کردن مجلات داخلی وزارتین</h3>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="@Model.ReadModel.Year" class="text-right"></label>
+                        <input type="text" asp-for="@Model.ReadModel.Year" class="form-control text-left" dir="ltr">
+                        <span class="text-danger" asp-validation-for="@Model.ReadModel.Year"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="@Model.ReadModel.Index" class="form-label"></label><br>
+                        <select asp-for="@Model.ReadModel.Index" tabindex="-1" class="js-example-basic-single select2-hidden-accessible">
+                            <option selected="selected">انتخاب</option>
+                            @foreach (var item in Model.Indexes)
+                            {
+                                <option value="@item.Value">@item.Key</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="@Model.ReadModel.FormFile" class="text-right"></label>
+                        <input type="text" asp-for="@Model.ReadModel.FormFile"type="file">
+                        <span class="text-danger" asp-validation-for="@Model.ReadModel.FormFile"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <button class="btn btn-primary px-5 text-center" type="submit">اعمال</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
