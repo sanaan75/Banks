@@ -12,11 +12,11 @@ public static class AppSetting
 
     #region JWT
 
-    public static byte[] JwtKey => Encoding.UTF8.GetBytes("ahwan1234a5678b9");
+    public static byte[] JwtKey => Encoding.UTF8.GetBytes("San@an1284a567cb9");
 
     //ToDo: Change the value of this encryption key
     //value must be exact 16 digits
-    public static byte[] JwtEncryptionKey => Encoding.UTF8.GetBytes("abcdefg123456qwe");
+    public static byte[] JwtEncryptionKey => Encoding.UTF8.GetBytes("a1hdefg1234D6qwe");
 
     public static int AllowUserAccountNo { get; set; } = 1;
 

@@ -1,4 +1,5 @@
-﻿using Entities.Helpers;
+﻿using Entities.Conferences;
+using Entities.Helpers;
 using Entities.Journals;
 using Entities.Permissions;
 using Entities.Users;
@@ -24,6 +25,7 @@ public class AppContext : DbContext, IDb
     public DbSet<UserGroup> UserGroups { get; set; }
     public DbSet<UserGroupPermission> UserGroupPermissions { get; set; }
     public DbSet<UserInGroup> UserInGroups { get; set; }
+    public DbSet<Conference> Conferences { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {

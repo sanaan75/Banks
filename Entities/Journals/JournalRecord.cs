@@ -4,6 +4,7 @@ namespace Entities.Journals;
 
 public class JournalRecord : IEntity
 {
+    public int Id { get; set; }
     public int JournalId { get; set; }
     public Journal Journal { get; set; }
     public string Category { get; set; }
@@ -22,5 +23,4 @@ public class JournalRecord : IEntity
     public DateTime? LastUpdateDate { get; set; }
     public int? LastUpdaterId { get; set; }
     public User LastUpdater { get; set; }
-    public int Id { get; set; }
 }

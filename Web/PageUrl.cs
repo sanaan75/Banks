@@ -32,6 +32,8 @@ public static class PageUrl
     public const string UpdateByYear = "/_App/Journals/UpdateByYear";
     public const string UpdateMIF = "/_App/Journals/UpdateMIF";
     public const string Vezaratain = "/_App/Journals/Vezaratain";
+    public const string Scopus = "/_App/Journals/Scopus";
+    public const string ScopusNew = "/_App/Journals/ScopusNew";
 
     public const string Reports = ListReports;
     public const string AddReport = "/_App/Reports/Add";

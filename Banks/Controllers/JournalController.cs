@@ -11,7 +11,7 @@ namespace Banks.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class JournalController : ControllerBase
+public class JournalController : ApplicationController
 {
     private readonly IFindJournal _findJournal;
     private readonly IDb _db;

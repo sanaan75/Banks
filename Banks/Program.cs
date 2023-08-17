@@ -55,12 +55,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
 
-//app.Map("/api", ApiCheck); //todo : remove on test
+//app.Map("/api", ApiCheck);
 
 app.UseCors(x => x
     .AllowAnyMethod()
     .AllowAnyHeader()
-    .SetIsOriginAllowed(origin => true) // allow any origin
+    .SetIsOriginAllowed(origin => true)
     .AllowCredentials());
 
 app.UseEndpoints(endpoints =>
@@ -81,31 +81,26 @@ Assembly[] GetAssembliesToBeRegisteredInIocContainer()
     };
 }
 
-static void ApiCheck(IApplicationBuilder app)
-{
-    app.Run(async context =>
-    {
-        try
-        {
-            StringValues headerValue;
-            context.Request.Headers.TryGetValue("JiroToken", out headerValue);
-            var headerValueResult = headerValue.FirstOrDefault();
-            //var Api_Key = "$Jiro" + DateTime.Now.Minute + DateTime.Now.Hour + "6342";
-
-            if (headerValueResult == null || headerValueResult.Equals(AppSetting.Api_Key) == false)
-            {
-                context.Response.StatusCode = 401;
-                await context.Response.WriteAsync("Unauthorized");
-            }
-            else
-            {
-                await context.Response.WriteAsync("Authorized");
-            }
-        }
-        catch (Exception ex)
-        {
-            context.Response.StatusCode = 500;
-            await context.Response.WriteAsync("Error");
-        }
-    });
-}
+// static void ApiCheck(IApplicationBuilder app)
+// {
+//     app.Run(async context =>
+//     {
+//         try
+//         {
+//             StringValues headerValue;
+//             context.Request.Headers.TryGetValue("JiroToken", out headerValue);
+//             var headerValueResult = headerValue.FirstOrDefault();
+//
+//             if (headerValueResult == null || headerValueResult.Equals(AppSetting.Api_Key) == false)
+//             {
+//                 context.Response.StatusCode = 401;
+//                 await context.Response.WriteAsync("Unauthorized");
+//             }
+//         }
+//         catch (Exception ex)
+//         {
+//             context.Response.StatusCode = 500;
+//             await context.Response.WriteAsync("Error");
+//         }
+//     });
+// }

@@ -4,6 +4,6 @@ namespace Banks.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class RecordController : ControllerBase
+public class RecordController : ApplicationController
 {
 }
