@@ -39,8 +39,6 @@ public class UpdateByYear : AppPageModel
     {
         if (ModelState.IsValid)
         {
-            var row = 1;
-            var title_ = "";
             try
             {
                 if (readModel.FormFile.Length > 0)
@@ -52,22 +50,22 @@ public class UpdateByYear : AppPageModel
                     {
                         foreach (var item in items)
                         {
-                            if (string.IsNullOrEmpty(item.Title))
+                            if (string.IsNullOrEmpty(item.Title.Trim()))
                                 continue;
 
                             if (item.Categories.Equals("N/A"))
                                 continue;
 
-                            var categories = item.Categories.Split(",");
+                            var categories = Clean(item.Categories).Split(",");
 
                             var journal = journals.FirstOrDefault(i =>
                                 i.Title.Trim().ToLower() == item.Title.Trim().ToLower());
 
                             if (journal != null)
                             {
-                                foreach (var cat in categories)
+                                foreach (var category in categories)
                                 {
-                                    var category = cat.Substring(0, cat.Length - 5).Trim();
+                                    //var category = cat.Trim();
 
                                     var records = _db.Query<JournalRecord>()
                                         .FilterByJournal(journal.Id)
@@ -80,25 +78,10 @@ public class UpdateByYear : AppPageModel
                                     if (record != null)
                                     {
                                         record.If = item.IF;
-
-                                        if (cat.Contains("("))
-                                        {
-                                            var startIndex = cat.IndexOf('(');
-                                            var qRank = cat.Substring(startIndex).Trim();
-                                            qRank = qRank.Replace("(", "").Replace(")", "").Trim();
-                                            record.QRank = GetQrank(qRank);
-                                        }
+                                        record.QRank = GetQrank(item.QRank);
                                     }
                                     else
                                     {
-                                        var qRank = string.Empty;
-                                        if (cat.Contains("("))
-                                        {
-                                            var startIndex = cat.IndexOf('(');
-                                            qRank = cat.Substring(startIndex).Trim();
-                                            qRank = qRank.Replace("(", "").Replace(")", "").Trim();
-                                        }
-
                                         var historyAlreadyExists = _db.Query<JournalRecord>()
                                             .Where(i => i.JournalId == journal.Id)
                                             .FilterByCategory(category)
@@ -115,7 +98,7 @@ public class UpdateByYear : AppPageModel
                                             Type = null,
                                             Value = null,
                                             IscClass = null,
-                                            QRank = GetQrank(qRank),
+                                            QRank = GetQrank(item.QRank),
                                             If = item.IF,
                                             Category = category,
                                             Mif = null,
@@ -139,22 +122,8 @@ public class UpdateByYear : AppPageModel
                                     EIssn = item.EISSN
                                 });
 
-                                foreach (var cat in categories)
+                                foreach (var category in categories)
                                 {
-                                    var qRank = string.Empty;
-                                    var category = string.Empty;
-
-                                    if (cat.Contains("("))
-                                    {
-                                        var startIndex = cat.IndexOf('(');
-                                        qRank = cat.Substring(startIndex).Trim();
-                                        qRank = qRank.Replace("(", "").Replace(")", "").Trim();
-                                    }
-                                    else
-                                    {
-                                        continue;
-                                    }
-
                                     _db.Set<JournalRecord>().Add(new JournalRecord
                                     {
                                         Journal = _newJournal,
@@ -163,22 +132,23 @@ public class UpdateByYear : AppPageModel
                                         Type = null,
                                         Value = null,
                                         IscClass = null,
-                                        QRank = GetQrank(qRank),
+                                        QRank = GetQrank(item.QRank),
                                         If = item.IF,
                                         Category = category,
                                         Mif = null,
                                         Aif = null,
-                                        CreatorId = 1, //_actorService.UserId,
+                                        CreatorId = 1,
                                         CreateDate = DateTime.UtcNow
                                     });
                                 }
                             }
+                            _db.Save();
                         }
-
-                        _db.Save();
+                        
                     }
                     catch (Exception ex)
                     {
+                        // ignored
                     }
                 }
 
@@ -195,6 +165,12 @@ public class UpdateByYear : AppPageModel
         }
 
         return Page();
+    }
+
+    private string Clean(string text)
+    {
+        return text.Replace(" - SSCI", string.Empty)
+            .Replace(" - SCIE", string.Empty);
     }
 
     private JournalQRank? GetQrank(string rank)
@@ -220,6 +196,7 @@ public class Model
     public string Title { get; set; }
     public string ISSN { get; set; }
     public string EISSN { get; set; }
+    public string QRank { get; set; }
     public decimal? IF { get; set; }
     public string Categories { get; set; }
 }

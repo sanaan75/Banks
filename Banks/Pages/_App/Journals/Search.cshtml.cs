@@ -57,7 +57,7 @@ public class Search : AppPageModel
 
 public class FilterModel
 {
-    [Display(Name = "کلید واژه")] public string Title { get; set; }
+    [Display(Name = "کلید واژه")] public string? Title { get; set; }
 
     [Display(Name = "سال")] public int? Year { get; set; }
     [Display(Name = "نمایه")] public JournalIndex? Index { get; set; }

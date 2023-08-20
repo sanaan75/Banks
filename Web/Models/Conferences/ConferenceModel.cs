@@ -1,9 +1,13 @@
-﻿namespace Entities.Conferences;
+﻿using System.ComponentModel.DataAnnotations;
+using Entities.Conferences;
 
-public class Conference : IEntity
+namespace Web.Models.Conferences;
+
+public class ConferenceModel
 {
-    public int Id { get; set; }
+    [Required(ErrorMessage = "title is required")]
     public string Title { get; set; }
+
     public string TitleEn { get; set; }
     public DateTime Start { get; set; }
     public DateTime End { get; set; }
@@ -14,5 +18,5 @@ public class Conference : IEntity
     public string CityEn { get; set; }
     public string Organ { get; set; }
     public string OrganEn { get; set; }
-    public Customer? Customer { get; set; }
+    public string Customer { get; set; }
 }

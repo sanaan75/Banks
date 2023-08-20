@@ -49,7 +49,7 @@ public class UpdateMIF : AppPageModel
                         var categories = item.Category.Split(",");
                         foreach (var category in categories)
                         {
-                            var records = _db.Query<JournalRecord>().FilterByCategory(category.Trim())
+                            var records = _db.Query<JournalRecord>().FilterByCategory(category)
                                 .FilterByYear(readModel.Year)
                                 .FilterByIndex(readModel.Index);
 

@@ -42,7 +42,7 @@ public class UpdateIF2 : AppPageModel
                 if (readModel.FormFile.Length > 0)
                 {
                     var dataSet = _excelFileReader.ToDataSet(readModel.FormFile);
-                    var items = dataSet.SetToList<JournalIfModel>();
+                    var items = dataSet.SetToList<JournalModel>();
 
                     foreach (var item in items)
                     {

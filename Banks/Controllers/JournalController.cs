@@ -44,6 +44,7 @@ public class JournalController : ApplicationController
         try
         {
             var items = _db.Query<JournalRecord>().Where(i => i.Year < year).FilterByJournalTitle(title);
+            var cc = items.ToList();
             if (items.Any())
             {
                 items = items.OrderByDescending(i => i.Year).ThenBy(i => i.QRank);
@@ -72,20 +73,12 @@ public class JournalController : ApplicationController
         }
     }
 
-
     [Route("GetFullInfo")]
     [HttpGet]
     public IActionResult GetFullInfo(string title, int year)
     {
         try
         {
-            StringValues headerValue;
-            Request.Headers.TryGetValue("JiroToken", out headerValue);
-            var headerValueResult = headerValue.FirstOrDefault();
-
-            if (headerValueResult.Equals(AppSetting.Api_Key) == false)
-                return Unauthorized();
-
             var items = _db.Query<JournalRecord>().FilterByJournalTitle(title).FilterByYear(year);
             if (items.Any())
             {
@@ -121,13 +114,6 @@ public class JournalController : ApplicationController
     {
         try
         {
-            StringValues headerValue;
-            Request.Headers.TryGetValue("JiroToken", out headerValue);
-            var headerValueResult = headerValue.FirstOrDefault();
-
-            if (headerValueResult.Equals(AppSetting.Api_Key) == false)
-                return Unauthorized();
-
             var items = _db.Query<JournalRecord>().FilterByIndex(JournalIndex.ISC).FilterByYear(year);
             if (items.Any())
             {

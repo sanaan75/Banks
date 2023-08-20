@@ -11,12 +11,12 @@ public static class JournalRecordExt
 
     public static IQueryable<JournalRecord> FilterByJournalTitle(this IQueryable<JournalRecord> items, string title)
     {
-        return items.Filter(title, i => i.Journal.Title.Trim().ToLower() == title.Trim().ToLower());
+        return items.Filter(title, i => i.Journal.Title.Trim().ToLower().Contains(title.Trim().ToLower()));
     }
 
     public static IQueryable<JournalRecord> FilterByCategory(this IQueryable<JournalRecord> items, string category)
     {
-        return items.Filter(category, i => i.Category.ToLower() == category.ToLower());
+        return items.Filter(category, i => i.Category.Trim().ToLower().Contains(category.Trim().ToLower()));
     }
 
     public static IQueryable<JournalRecord> FilterByIndex(this IQueryable<JournalRecord> items, JournalIndex? index)

@@ -17,8 +17,8 @@ public class ApplicationController : Controller
         Request.Headers.TryGetValue("JiroToken", out headerValue);
         var headerValueResult = headerValue.FirstOrDefault();
         Console.WriteLine(headerValueResult);
-
-        if (headerValueResult.Equals(AppSetting.Api_Key) == false)
+        
+        if (headerValueResult!.Equals(AppSetting.Api_Key) == false)
             throw new AppException(401, "");
 
         // Token = HttpContext?.User?.Claims.FirstOrDefault() != null

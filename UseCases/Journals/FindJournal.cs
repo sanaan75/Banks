@@ -21,10 +21,10 @@ public class FindJournal : IFindJournal
         query = query.Where(i => i.Year < request.Year);
 
         if (string.IsNullOrEmpty(request.Category) == false)
-            query = query.Where(j => j.Category == request.Category.ToUpper());
+            query = query.Where(j => j.Category.Trim().ToLower() == request.Category.Trim().ToLower());
 
         if (string.IsNullOrEmpty(request.Title) == false)
-            query = query.Where(k => k.Journal.Title.Contains(request.Title));
+            query = query.Where(k => k.Journal.Title.Trim().ToLower().Contains(request.Title.Trim().ToLower()));
 
         if (string.IsNullOrEmpty(request.Issn) == false)
             query = query.FilterByIssn(request.Issn);
