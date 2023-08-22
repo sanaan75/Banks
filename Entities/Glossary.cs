@@ -2,7 +2,7 @@
 
 public static class Glossary
 {
-    public const string International = "بین‌المللی";
+    public const string International = "بین المللی";
     public const string National = "ملی";
     public const string Regional = "منطقه ای";
     public const string Province = "استانی";

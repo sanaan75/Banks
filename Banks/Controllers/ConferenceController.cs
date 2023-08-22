@@ -35,15 +35,15 @@ public class ConferenceController : ApplicationController
         if (dup == true)
             return BadRequest("already exist");
 
-        if (model.Start > model.End)
+        if (model.StartDate > model.EndDate)
             return BadRequest("start can not be after end");
 
         _db.Set<Conference>().Add(new Conference
         {
             Title = model.Title.ReplaceArabicLetters(),
             TitleEn = model.TitleEn.ReplaceArabicLetters(),
-            Start = model.Start,
-            End = model.End,
+            Start = model.StartDate,
+            End = model.EndDate,
             Country = model.Country,
             CountryEn = model.CountryEn,
             City = model.City,
@@ -84,8 +84,8 @@ public class ConferenceController : ApplicationController
                     TitleEn = i.TitleEn,
                     Country = i.Country,
                     CountryEn = i.CountryEn,
-                    Start = i.Start,
-                    End = i.End,
+                    StartDate = i.Start,
+                    EndDate = i.End,
                     Level = i.Level.GetCaption(),
                     City = i.City,
                     CityEn = i.CityEn,
@@ -101,8 +101,8 @@ public class ConferenceController : ApplicationController
                     TitleEn = i.TitleEn,
                     Country = i.Country,
                     CountryEn = i.CountryEn,
-                    Start = i.Start,
-                    End = i.End,
+                    StartDate = i.Start,
+                    EndDate = i.End,
                     Level = i.Level.GetCaption(),
                     City = i.City,
                     CityEn = i.CityEn,

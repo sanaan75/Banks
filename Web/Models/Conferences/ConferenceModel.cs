@@ -7,8 +7,8 @@ public class ConferenceModel
     [Required(ErrorMessage = "title is required")]
     public string Title { get; set; }
     public string TitleEn { get; set; }
-    public DateTime Start { get; set; }
-    public DateTime End { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
     public string Level { get; set; }
     public string Country { get; set; }
     public string CountryEn { get; set; }
