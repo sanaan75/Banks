@@ -11,8 +11,7 @@ public static class ConferenceExt
 
         foreach (var token in tokens)
             items = items.Where(i =>
-                i.Title.Trim().ToLower().Contains(token.ToLower()) ||
-                i.TitleEn.Trim().ToLower().Contains(token.ToLower()));
+                i.Title.Trim().ToLower().Contains(token.ToLower()) || i.TitleEn.Trim().ToLower().Contains(token.ToLower()));
 
         return items;
     }

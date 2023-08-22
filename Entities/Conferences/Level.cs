@@ -4,6 +4,7 @@ public enum Level
 {
     International = 1,
     National = 2,
-    Regional = 3,
-    Province = 4
+    Regional = 4,
+    Province = 8,
+    Unknown = 16
 }

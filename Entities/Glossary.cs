@@ -2,10 +2,13 @@
 
 public static class Glossary
 {
-    public const string Customer = "مشتری";
-    public const string Customers = "مشتریان";
+    public const string International = "بین‌المللی";
+    public const string National = "ملی";
+    public const string Regional = "منطقه ای";
+    public const string Province = "استانی";
+    public const string Unknown = "نا مشخص";
+    public const string Public = "عام";
 
-    //D-d
     public const string DeActive = "غیر فعال";
     public const string DefaultUserGroup = "دسترسی های پیش فرض";
     public const string Details = "جزییات";
@@ -15,18 +18,6 @@ public static class Glossary
     public const string EditAndAction = "ویرایش و عملیات";
     public const string EndDate = "تاریخ اتمام";
 
-    //G-g
-    public const string Good = "کالا";
-    public const string Goods = "کالاها";
-
-    public const string Reports = "گزارشات";
-    public const string Journals = "مجلات";
-    public const string Permissions = "دسترسی ها";
-
-    public const string Home = "صفحه نخست";
-
-
-    //A-a
     public const string Admin = "مدیر";
     public const string Active = "فعال";
     public const string Account = "حساب";
@@ -35,11 +26,9 @@ public static class Glossary
     public const string AddJournal = "افزودن مجله";
     public const string Accepted = "تایید شده";
 
-    //B-b
     public const string Back = "بازگشت";
     public const string List = "لیست";
 
-    //C-c
     public const string Client = "کاربر";
     public const string Changes = "تغییرات";
 
@@ -119,19 +108,10 @@ public static class Glossary
     public const string UpdateMIF = "اپدیت ضرایب دسته";
 
 
-    //V-v
     public const string Visible = "قابل رویت";
-
-    //W-w
-
-    //X-x
-
-    //Y-y
     public const string Year = "سال";
 
-    //Z-z
 
-    //----------------------
     public const string ImportFromExcel = "وارد کردن از اکسل";
     public const string BasicUsers = "کاربران";
     public const string Country = "کشور";
@@ -164,7 +144,7 @@ public static class Glossary
     public const string DaneshNameh = "دانشنامه";
     public const string ElmiTarviji = "علمی ترویجی";
     public const string ElmiPazhuheshi = "علمی پژوهشی";
-    public const string International = "بین‌المللی";
+
     public const string D = "د";
     public const string C = "ج";
     public const string B = "ب";

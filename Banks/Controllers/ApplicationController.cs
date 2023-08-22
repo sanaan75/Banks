@@ -17,9 +17,35 @@ public class ApplicationController : Controller
         Request.Headers.TryGetValue("JiroToken", out headerValue);
         var headerValueResult = headerValue.FirstOrDefault();
         Console.WriteLine(headerValueResult);
-        
+
+        if (headerValueResult == null)
+        {
+            ctx.HttpContext.Response.Clear();
+            ctx.HttpContext.Response.ContentType = "application/json";
+            ctx.HttpContext.Response.StatusCode = 401;
+            ctx.Result = StatusCode(401,
+                new
+                {
+                    Message =
+                        $"Invalid Request"
+                });
+            return;
+        }
+
         if (headerValueResult!.Equals(AppSetting.Api_Key) == false)
-            throw new AppException(401, "");
+        {
+            ctx.HttpContext.Response.Clear();
+            ctx.HttpContext.Response.ContentType = "application/json";
+            ctx.HttpContext.Response.StatusCode = 401;
+            ctx.Result = StatusCode(401,
+                new
+                {
+                    Message =
+                        $"Invalid Request"
+                });
+            return;
+        }
+            //throw new AppException(401, "");
 
         // Token = HttpContext?.User?.Claims.FirstOrDefault() != null
         //     ? HttpContext.User.Claims.First().Value

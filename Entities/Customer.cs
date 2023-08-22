@@ -2,6 +2,7 @@
 
 public enum Customer
 {
+    Public = 0,
     UOK = 1,
     UMZ = 2,
     Arak = 3,

@@ -164,8 +164,8 @@ justify-content: flex-start;
         <div class="navigation-icon-menu">
 
             <ul>
-                <li data-toggle="tooltip" title="@Glossary.Home">
-                    <a href="#Home" title="@Glossary.Home">
+                <li data-toggle="tooltip" title="صفحه نخست">
+                    <a href="#Home" title="صفحه نخست">
                         <i class="fa-solid text-white fa-home"></i>
                         <span class="mx-1 font-size-13">صفحه نخست</span>
                     </a>
@@ -182,8 +182,8 @@ justify-content: flex-start;
 
                 @if (CheckPermission.Respond(actor.Permissions, Permission.Journals))
                 {
-                    <li data-toggle="tooltip" title="@Glossary.Journals">
-                        <a href="#Journals" title="@Glossary.Journals">
+                    <li data-toggle="tooltip" title="مجلات">
+                        <a href="#Journals" title="مجلات">
                             <i class="fa-solid text-white fa-puzzle-piece"></i>
                             <span class="mx-1 font-size-13">مجلات</span>
                         </a>
@@ -192,20 +192,20 @@ justify-content: flex-start;
 
                 @if (CheckPermission.Respond(actor.Permissions, Permission.Reports))
                 {
-                    <li data-toggle="tooltip" title="@Glossary.Reports">
-                        <a href="#Reports" title="@Glossary.Reports">
+                    <li data-toggle="tooltip" title="گزارشات">
+                        <a href="#Reports" title="گزارشات">
                             <i class="fa-solid text-white fa-puzzle-piece"></i>
-                            <span class="mx-1 font-size-13">@Glossary.Reports</span>
+                            <span class="mx-1 font-size-13">گزارشات</span>
                         </a>
                     </li>
                 }
 
                 @if (CheckPermission.Respond(actor.Permissions, Permission.Permissions))
                 {
-                    <li data-toggle="tooltip" title="@Glossary.Permissions">
-                        <a href="#Permissions" title="@Glossary.Permissions">
+                    <li data-toggle="tooltip" title="گزارشات">
+                        <a href="#Permissions" title="گزارشات">
                             <i class="fa-solid text-white fa-puzzle-piece"></i>
-                            <span class="mx-1 font-size-13">@Glossary.Permissions</span>
+                            <span class="mx-1 font-size-13">گزارشات</span>
                         </a>
                     </li>
                 }
@@ -219,11 +219,11 @@ justify-content: flex-start;
             <ul class="@{@Html.Raw(MenuHelper.Respond(Menu.Home))}" id="Home">
                 <li class="navigation-divider">
                     <h5>
-                        <a href="@PageUrl.Home">@Glossary.Home</a>
+                        <a href="@PageUrl.Home">صفحه نخست</a>
                     </h5>
                 </li>
                 <li>
-                    <a asp-page="@PageUrl.Home">@Glossary.Home</a>
+                    <a asp-page="@PageUrl.Home">صفحه نخست</a>
                 </li>
             </ul>
 
@@ -235,13 +235,13 @@ justify-content: flex-start;
                     <a asp-page="@PageUrl.ListUsers">@Glossary.List</a>
                 </li>
                 <li class="navigation-divider">
-                    <h5>@Glossary.Permissions</h5>
+                    <h5>دسترسی ها</h5>
                 </li>
             </ul>
 
             <ul class="@{@Html.Raw(MenuHelper.Respond(Menu.Journal))}" id="Journals">
                 <li class="navigation-divider">
-                    <h5>@Glossary.Journals</h5>
+                    <h5>مجلات</h5>
                 </li>
                 <li>
                     <a asp-page="@PageUrl.ListJournals">@Glossary.List</a>
@@ -270,11 +270,14 @@ justify-content: flex-start;
                 <li>
                     <a asp-page="@PageUrl.UpdateMIF">به روز رسانی MIF</a>
                 </li>
+                <li>
+                    <a asp-page="@PageUrl.ImportConferenceFromExcel">وارد کردن کنفرانس</a>
+                </li>
             </ul>
 
             <ul class="@{@Html.Raw(MenuHelper.Respond(Menu.Reports))}" id="Reports">
                 <li class="navigation-divider">
-                    <h5>@Glossary.Reports</h5>
+                    <h5>گزارش ها</h5>
                 </li>
                 @* <li> *@
                 @*     <a asp-page="@PageUrl.ListServices">لیست سرویس ها</a> *@
@@ -283,7 +286,7 @@ justify-content: flex-start;
 
             <ul class="@{@Html.Raw(MenuHelper.Respond(Menu.Permissions))}" id="Permissions">
                 <li class="navigation-divider">
-                    <h5>@Glossary.Permissions</h5>
+                    <h5>دسترسی ها</h5>
                 </li>
                 <li>
                     <a asp-page="@PageUrl.AddUserGroup">ایجاد گروه کاربری</a>

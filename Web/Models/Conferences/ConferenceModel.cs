@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Entities.Conferences;
 
 namespace Web.Models.Conferences;
 
@@ -7,11 +6,10 @@ public class ConferenceModel
 {
     [Required(ErrorMessage = "title is required")]
     public string Title { get; set; }
-
     public string TitleEn { get; set; }
     public DateTime Start { get; set; }
     public DateTime End { get; set; }
-    public Level Level { get; set; }
+    public string Level { get; set; }
     public string Country { get; set; }
     public string CountryEn { get; set; }
     public string City { get; set; }

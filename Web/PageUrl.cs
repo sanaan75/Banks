@@ -23,6 +23,7 @@ public static class PageUrl
     public const string JournalsRecords = "/_App/Journals/Records/Index";
     public const string AddJournalsRecord = "/_App/Journals/Records/Create";
     public const string UpdateJournalsRecord = "/_App/Journals/Records/Edit";
+    public const string ImportConferenceFromExcel = "/_App/Conferences/ImportConferenceFromExcel";
 
     public const string ImportFromExcel = "/_App/Journals/ImportExcel";
     public const string ReadExcelCloritive = "/_App/Journals/ReadExcelCloritive";

@@ -10,4 +10,5 @@ public static class PageTitle
     public const string Vezaratain = "داخلی مورد تایید وزارتین";
     public const string Scopus = "مجلات Scopus";
     public const string ScopusNew = "مجلات Scopus";
+    public const string ImportConferenceFromExcel = "وارد کردن کنفرانس";
 }

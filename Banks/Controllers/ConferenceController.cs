@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.Conferences;
+using Entities.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using UseCases.Interfaces;
 using Web.Models.Conferences;
@@ -39,15 +40,15 @@ public class ConferenceController : ApplicationController
 
         _db.Set<Conference>().Add(new Conference
         {
-            Title = model.Title,
-            TitleEn = model.TitleEn,
+            Title = model.Title.ReplaceArabicLetters(),
+            TitleEn = model.TitleEn.ReplaceArabicLetters(),
             Start = model.Start,
             End = model.End,
             Country = model.Country,
             CountryEn = model.CountryEn,
             City = model.City,
             CityEn = model.CityEn,
-            Level = model.Level,
+            //Level = model.Level,
             Organ = model.Organ,
             OrganEn = model.OrganEn,
             Customer = GetCustomer(model.Customer),
@@ -67,18 +68,48 @@ public class ConferenceController : ApplicationController
 
     [Route("FindByTitle")]
     [HttpGet]
-    public IActionResult FindByTitle(string title, string titleEn)
+    public IActionResult FindByTitle(string title, string? titleEn)
     {
         try
         {
             if (string.IsNullOrWhiteSpace(title) && string.IsNullOrWhiteSpace(titleEn))
                 return BadRequest("title and titleEn can not be null");
+            IQueryable<ConferenceModel> result;
 
-            var result = _db.Query<Conference>();
             if (string.IsNullOrWhiteSpace(title) == false)
-                result = result.FilterByKeyword(title);
+            {
+                result = _db.Query<Conference>().FilterByKeyword(title).Select(i => new ConferenceModel
+                {
+                    Title = i.Title,
+                    TitleEn = i.TitleEn,
+                    Country = i.Country,
+                    CountryEn = i.CountryEn,
+                    Start = i.Start,
+                    End = i.End,
+                    Level = i.Level.GetCaption(),
+                    City = i.City,
+                    CityEn = i.CityEn,
+                    Organ = i.Organ,
+                    OrganEn = i.OrganEn,
+                    Customer = i.Customer.GetCaption()
+                });
+            }
             else
-                result = result.FilterByKeyword(titleEn);
+                result = _db.Query<Conference>().FilterByKeyword(titleEn).Select(i => new ConferenceModel
+                {
+                    Title = i.Title,
+                    TitleEn = i.TitleEn,
+                    Country = i.Country,
+                    CountryEn = i.CountryEn,
+                    Start = i.Start,
+                    End = i.End,
+                    Level = i.Level.GetCaption(),
+                    City = i.City,
+                    CityEn = i.CityEn,
+                    Organ = i.Organ,
+                    OrganEn = i.OrganEn,
+                    Customer = i.Customer.GetCaption()
+                });
 
             return Ok(result.ToList());
         }
@@ -102,4 +133,5 @@ public class ConferenceController : ApplicationController
                 return null;
         }
     }
+    
 }
