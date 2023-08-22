@@ -37,7 +37,9 @@ public static class StringCleanExt
 
     private static string ReplaceBadHalfSpaces(string text) => text.Replace('¬', '\u200C');
 
-    public static string ReplaceArabicLetters(this string text) => text.Replace('ى', 'ی').Replace('ي', 'ی').Replace('ك', 'ک').Replace('ة', 'ه');
+    public static string ReplaceArabicLetters(this string text) => text != null
+        ? text.Replace('ى', 'ی').Replace('ي', 'ی').Replace('ك', 'ک').Replace('ة', 'ه')
+        : string.Empty;
 
     public static string NormalizeText(this string str) => str.Clean();
 

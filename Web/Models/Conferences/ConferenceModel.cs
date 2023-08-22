@@ -4,7 +4,6 @@ namespace Web.Models.Conferences;
 
 public class ConferenceModel
 {
-    [Required(ErrorMessage = "title is required")]
     public string Title { get; set; }
     public string TitleEn { get; set; }
     public DateTime StartDate { get; set; }

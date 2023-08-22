@@ -25,34 +25,45 @@ public class ConferenceController : ApplicationController
         if (ModelState.IsValid == false)
             return BadRequest("model is not valid");
 
-        var dup = _db.Query<Conference>().FilterByTitle(model.Title).Any();
-
-        if (dup == true)
-            return BadRequest("already exist");
-
-        dup = _db.Query<Conference>().FilterByTitleEn(model.TitleEn).Any();
-
-        if (dup == true)
-            return BadRequest("already exist");
-
-        if (model.StartDate > model.EndDate)
-            return BadRequest("start can not be after end");
-
-        _db.Set<Conference>().Add(new Conference
+        try
         {
-            Title = model.Title.ReplaceArabicLetters(),
-            TitleEn = model.TitleEn.ReplaceArabicLetters(),
-            Start = model.StartDate,
-            End = model.EndDate,
-            Country = model.Country,
-            CountryEn = model.CountryEn,
-            City = model.City,
-            CityEn = model.CityEn,
-            //Level = model.Level,
-            Organ = model.Organ,
-            OrganEn = model.OrganEn,
-            Customer = GetCustomer(model.Customer),
-        });
+            var dup = _db.Query<Conference>().FilterByTitle(model.Title).Any();
+
+            if (dup == true && model.Title.Length > 1)
+                return BadRequest("already exist");
+
+            dup = _db.Query<Conference>().FilterByTitleEn(model.TitleEn).Any();
+
+            if (dup == true && model.TitleEn.Length > 1)
+                return BadRequest("already exist");
+
+            if (model.StartDate > model.EndDate)
+                return BadRequest("start can not be after end");
+
+            _db.Set<Conference>().Add(new Conference
+            {
+                Title = model.Title.ReplaceArabicLetters(),
+                TitleEn = model.TitleEn.ReplaceArabicLetters(),
+                Start = model.StartDate,
+                End = model.EndDate,
+                Country = model.Country,
+                CountryEn = model.CountryEn,
+                City = model.City,
+                CityEn = model.CityEn,
+                Level = GetLevel(model.Level),
+                Organ = model.Organ,
+                OrganEn = model.OrganEn,
+                Customer = GetCustomer(model.Customer)
+            });
+
+            _db.Save();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return StatusCode(500);
+        }
+
         return Ok();
     }
 
@@ -133,5 +144,21 @@ public class ConferenceController : ApplicationController
                 return null;
         }
     }
-    
+
+    private Level GetLevel(string level)
+    {
+        switch (level.ToLower())
+        {
+            case "بین المللی":
+                return Level.International;
+            case "ملی":
+                return Level.National;
+            case "منطقه ای":
+                return Level.Regional;
+            case "استانی":
+                return Level.Province;
+            default:
+                return Level.Unknown;
+        }
+    }
 }
