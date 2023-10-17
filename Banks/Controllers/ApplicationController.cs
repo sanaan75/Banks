@@ -26,12 +26,11 @@ public class ApplicationController : Controller
             ctx.Result = StatusCode(401,
                 new
                 {
-                    Message =
-                        $"Invalid Request"
+                    Message = "Invalid Request"
                 });
             return;
         }
-
+        
         if (headerValueResult!.Equals(AppSetting.Api_Key) == false)
         {
             ctx.HttpContext.Response.Clear();
@@ -45,7 +44,6 @@ public class ApplicationController : Controller
                 });
             return;
         }
-            //throw new AppException(401, "");
 
         // Token = HttpContext?.User?.Claims.FirstOrDefault() != null
         //     ? HttpContext.User.Claims.First().Value

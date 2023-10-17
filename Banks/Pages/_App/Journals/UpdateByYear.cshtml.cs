@@ -13,17 +13,13 @@ namespace Banks.Pages._App.Journals;
 public class UpdateByYear : AppPageModel
 {
     private readonly IAddJournal _addJournal;
-    private readonly IAddJournalRecord _addJournalRecord;
     private readonly IDb _db;
     private IExcelFileReader _excelFileReader;
 
-    public UpdateByYear(IDb db, IExcelFileReader excelFileReader,
-        IAddJournalRecord addJournalRecord,
-        IAddJournal addJournal)
+    public UpdateByYear(IDb db, IExcelFileReader excelFileReader, IAddJournal addJournal)
     {
         _db = db;
         _excelFileReader = excelFileReader;
-        _addJournalRecord = addJournalRecord;
         _addJournal = addJournal;
         Indexes = EnumExt.GetList<JournalIndex>();
     }
@@ -45,7 +41,8 @@ public class UpdateByYear : AppPageModel
                 {
                     var dataSet = _excelFileReader.ToDataSet(readModel.FormFile);
                     var items = dataSet.SetToList<Model>();
-                    var journals = _db.Query<Journal>().Select(i => new { i.Id, i.Title }).ToList();
+                    var journals = _db.Query<Journal>()
+                        .Select(i => new { i.Id, i.Title }).ToList();
                     try
                     {
                         foreach (var item in items)
@@ -53,80 +50,42 @@ public class UpdateByYear : AppPageModel
                             if (string.IsNullOrEmpty(item.Title.Trim()))
                                 continue;
 
-                            if (item.Categories.Equals("N/A"))
+                            if (item.Category.Equals("N/A"))
                                 continue;
 
-                            var categories = Clean(item.Categories).Split(",");
+                            var category = Clean(item.Category);
 
                             var journal = journals.FirstOrDefault(i =>
-                                i.Title.Trim().ToLower() == item.Title.Trim().ToLower());
+                                i.Title.Trim().ToLower().Equals(item.Title.Trim().ToLower()));
 
                             if (journal != null)
                             {
-                                foreach (var category in categories)
+                                var records = _db.Query<JournalRecord>()
+                                    .FilterByJournal(journal.Id)
+                                    .FilterByYear(readModel.Year)
+                                    .FilterByIndex(readModel.Index).ToList();
+
+                                var record = records.FirstOrDefault(k =>
+                                    k.Category.Trim().ToLower() == category.Trim().ToLower());
+
+                                if (record != null)
                                 {
-                                    //var category = cat.Trim();
-
-                                    var records = _db.Query<JournalRecord>()
-                                        .FilterByJournal(journal.Id)
-                                        .FilterByYear(readModel.Year)
-                                        .FilterByIndex(readModel.Index).ToList();
-
-                                    var record = records.FirstOrDefault(k =>
-                                        k.Category.Trim().ToLower() == category.Trim().ToLower());
-
-                                    if (record != null)
-                                    {
-                                        record.If = item.IF;
-                                        record.QRank = GetQrank(item.QRank);
-                                    }
-                                    else
-                                    {
-                                        var historyAlreadyExists = _db.Query<JournalRecord>()
-                                            .Where(i => i.JournalId == journal.Id)
-                                            .FilterByCategory(category)
-                                            .Any(i => i.Year == readModel.Year);
-
-                                        if (historyAlreadyExists)
-                                            continue;
-
-                                        _db.Set<JournalRecord>().Add(new JournalRecord
-                                        {
-                                            JournalId = journal.Id,
-                                            Year = readModel.Year,
-                                            Index = readModel.Index,
-                                            Type = null,
-                                            Value = null,
-                                            IscClass = null,
-                                            QRank = GetQrank(item.QRank),
-                                            If = item.IF,
-                                            Category = category,
-                                            Mif = null,
-                                            Aif = null,
-                                            CreatorId = 1, //_actorService.UserId,
-                                            CreateDate = DateTime.UtcNow
-                                        });
-                                    }
+                                    record.If = item.IF;
+                                    record.QRank = GetQrank(item.QRank);
                                 }
-                            }
-                            else
-                            {
-                                var Issn = string.Empty;
-                                if (item.ISSN != null && item.ISSN.Equals("N/A") == false)
-                                    Issn = item.ISSN;
-
-                                var _newJournal = _addJournal.Responce(new IAddJournal.Request
+                                else
                                 {
-                                    Title = item.Title.Trim(),
-                                    Issn = Issn,
-                                    EIssn = item.EISSN
-                                });
+                                    var historyAlreadyExists = _db.Query<JournalRecord>()
+                                        .Where(i => i.JournalId == journal.Id)
+                                        .FilterByCategory(category)
+                                        .Any(i => i.Year == readModel.Year);
 
-                                foreach (var category in categories)
-                                {
+                                    if (historyAlreadyExists)
+                                        continue;
+
                                     _db.Set<JournalRecord>().Add(new JournalRecord
                                     {
-                                        Journal = _newJournal,
+                                        JournalId = journal.Id,
                                         Year = readModel.Year,
                                         Index = readModel.Index,
                                         Type = null,
@@ -141,10 +100,47 @@ public class UpdateByYear : AppPageModel
                                         CreateDate = DateTime.UtcNow
                                     });
                                 }
+
+                                _db.Save();
                             }
-                            _db.Save();
+                            else
+                            {
+                                var Issn = string.Empty;
+                                if (item.ISSN != null && item.ISSN.Equals("N/A") == false)
+                                    Issn = item.ISSN;
+
+                                var _newJournal = _addJournal.Responce(new IAddJournal.Request
+                                {
+                                    Title = item.Title.Trim(),
+                                    Issn = Issn,
+                                    EIssn = item.EISSN
+                                });
+
+                                _db.Set<JournalRecord>().Add(new JournalRecord
+                                {
+                                    Journal = _newJournal,
+                                    Year = readModel.Year,
+                                    Index = readModel.Index,
+                                    Type = null,
+                                    Value = null,
+                                    IscClass = null,
+                                    QRank = GetQrank(item.QRank),
+                                    If = item.IF,
+                                    Category = category,
+                                    Mif = null,
+                                    Aif = null,
+                                    CreatorId = 1,
+                                    CreateDate = DateTime.UtcNow
+                                });
+                                _db.Save();
+
+                                journals.Add(new
+                                {
+                                    _newJournal.Id,
+                                    _newJournal.Title
+                                });
+                            }
                         }
-                        
                     }
                     catch (Exception ex)
                     {
@@ -198,5 +194,5 @@ public class Model
     public string EISSN { get; set; }
     public string QRank { get; set; }
     public decimal? IF { get; set; }
-    public string Categories { get; set; }
+    public string Category { get; set; }
 }

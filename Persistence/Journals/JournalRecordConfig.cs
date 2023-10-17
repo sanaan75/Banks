@@ -8,6 +8,7 @@ public class JournalRecordConfig : IEntityTypeConfiguration<JournalRecord>
 {
     public void Configure(EntityTypeBuilder<JournalRecord> builder)
     {
+        builder.HasIndex(x => x.Id);
         builder.HasIndex(x => x.Index);
         builder.HasIndex(x => x.Type);
         builder.HasIndex(x => x.Value);

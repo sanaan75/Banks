@@ -1,8 +1,6 @@
-﻿using Entities;
-using Entities.Journals;
+﻿using Entities.Journals;
 using Entities.Utilities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
 using UseCases.Interfaces;
 using UseCases.Journals;
 using Web.Models;
@@ -13,13 +11,15 @@ namespace Banks.Controllers;
 [ApiController]
 public class JournalController : ApplicationController
 {
-    private readonly IFindJournal _findJournal;
     private readonly IDb _db;
-
-    public JournalController(IFindJournal findJournal, IDb db)
+    private readonly IFindJournal _findJournal;
+    private readonly IIsJournalBlackList _isJournalBlackList;
+    
+    public JournalController(IFindJournal findJournal, IDb db, IIsJournalBlackList isJournalBlackList)
     {
         _findJournal = findJournal;
         _db = db;
+        _isJournalBlackList = isJournalBlackList;
     }
 
     [Route("GetRecords")]
@@ -137,5 +137,14 @@ public class JournalController : ApplicationController
         {
             return BadRequest(ex.Message);
         }
+    }
+
+    [Route("IsBlackList")]
+    [HttpGet]
+    public JsonResult IsBlackList(string title)
+    {
+        var isBlackList = _isJournalBlackList.Responce(title);
+
+        return new JsonResult(isBlackList);
     }
 }

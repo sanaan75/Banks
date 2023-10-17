@@ -26,6 +26,7 @@ public class AppContext : DbContext, IDb
     public DbSet<UserGroupPermission> UserGroupPermissions { get; set; }
     public DbSet<UserInGroup> UserInGroups { get; set; }
     public DbSet<Conference> Conferences { get; set; }
+    public DbSet<BlackList> BlackLists { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
@@ -78,6 +79,11 @@ public class AppContext : DbContext, IDb
     int IDb.Save()
     {
         return base.SaveChanges();
+    }
+
+    Task<int> IDb.SaveAsync()
+    {
+        return base.SaveChangesAsync();
     }
 
     #endregion

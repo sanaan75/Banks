@@ -4,6 +4,9 @@ public static class EnumExt
 {
     public static string GetCaption(this Enum en)
     {
+        if (en is null)
+            return string.Empty;
+        
         return GlossaryExt.Get(en.ToString());
     }
 

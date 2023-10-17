@@ -18,4 +18,5 @@ public class Journal : IEntity
     public int? LastUpdaterId { get; set; }
     public User LastUpdater { get; set; }
     public ICollection<JournalRecord> Records { get; set; }
+    public ICollection<BlackList> BlackLists { get; set; }
 }

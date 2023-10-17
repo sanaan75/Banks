@@ -9,4 +9,5 @@ public interface IDb
     IQueryable<TEntity> Query<TEntity>() where TEntity : class, IEntity;
 
     int Save();
+    Task<int> SaveAsync();
 }

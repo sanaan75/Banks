@@ -50,9 +50,7 @@ public class UpdateISC : AppPageModel
                         {
                             if (string.IsNullOrEmpty(item.Title.Trim()))
                                 continue;
-
-                            // if (item.Year == null)
-                            //     continue;
+                            
                             if (item.Categories.Equals("N/A"))
                                 continue;
 
@@ -100,7 +98,7 @@ public class UpdateISC : AppPageModel
                                         _addJournalRecord.Respond(new IAddJournalRecord.Request
                                         {
                                             JournalId = journal.Id,
-                                            Category = category,
+                                            Category = category.Trim().Clean(),
                                             Year = readModel.Year,
                                             If = item.IF,
                                             QRank = GetQrank(qRank),
@@ -117,7 +115,7 @@ public class UpdateISC : AppPageModel
 
                                 var journalNew = _addJournal.Responce(new IAddJournal.Request
                                 {
-                                    Title = item.Title.Trim(),
+                                    Title = item.Title.Trim().Clean(),
                                     Issn = Issn,
                                     EIssn = item.EISSN
                                 });
@@ -142,7 +140,7 @@ public class UpdateISC : AppPageModel
                                     _addJournalRecord.Respond(new IAddJournalRecord.Request
                                     {
                                         JournalId = journalNew.Id,
-                                        Category = category,
+                                        Category = category.Trim().Clean(),
                                         Year = readModel.Year,
                                         If = item.IF,
                                         QRank = GetQrank(qRank),
@@ -193,9 +191,6 @@ public class ISC_Model
     public string Title { get; set; }
     public string ISSN { get; set; }
     public string EISSN { get; set; }
-
     public decimal? IF { get; set; }
-
-    //public int? Year { get; set; }
     public string Categories { get; set; }
 }

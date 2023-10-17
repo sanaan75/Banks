@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Web.Models.Journals
+namespace Web.Models
 {
     public class JournalModel
     {

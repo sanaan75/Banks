@@ -2,7 +2,6 @@ using System.Reflection;
 using Entities;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Primitives;
 using NetCore.AutoRegisterDi;
 using Persistence;
 using UseCases;
@@ -21,8 +20,6 @@ builder.Services.AddControllers();
 
 builder.Services.RegisterAssemblyPublicNonGenericClasses(GetAssembliesToBeRegisteredInIocContainer())
     .AsPublicImplementedInterfaces(ServiceLifetime.Scoped);
-
-builder.Services.AddCors();
 
 builder.Services.AddSession(options => { options.IdleTimeout = TimeSpan.FromMinutes(120); });
 
@@ -55,8 +52,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
 
-//app.Map("/api", ApiCheck);
-
 app.UseCors(x => x
     .AllowAnyMethod()
     .AllowAnyHeader()
@@ -80,27 +75,3 @@ Assembly[] GetAssembliesToBeRegisteredInIocContainer()
         typeof(WebDummy).Assembly
     };
 }
-
-// static void ApiCheck(IApplicationBuilder app)
-// {
-//     app.Run(async context =>
-//     {
-//         try
-//         {
-//             StringValues headerValue;
-//             context.Request.Headers.TryGetValue("JiroToken", out headerValue);
-//             var headerValueResult = headerValue.FirstOrDefault();
-//
-//             if (headerValueResult == null || headerValueResult.Equals(AppSetting.Api_Key) == false)
-//             {
-//                 context.Response.StatusCode = 401;
-//                 await context.Response.WriteAsync("Unauthorized");
-//             }
-//         }
-//         catch (Exception ex)
-//         {
-//             context.Response.StatusCode = 500;
-//             await context.Response.WriteAsync("Error");
-//         }
-//     });
-// }

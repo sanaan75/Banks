@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using System.Net.Http.Headers;
+using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Web.Models;
@@ -39,6 +40,42 @@ public class ExternalController : ApplicationController
             });
         }
 
+        return new JsonResult(Result);
+    }
+
+
+    [Route("Conferences")]
+    [HttpGet]
+    public JsonResult GetConferences()
+    {
+        var client = new HttpClient();
+        client.BaseAddress =
+            new Uri(
+                "https://www.conferencelists.org/em-ajax/get_listings/lang=&search_datetimes%5B%5D=&search_event_types%5B%5D=&per_page=10&orderby=event_start_date&order=ASC&page=1");
+        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        var response = client.GetAsync("").Result;
+
+        if (response.IsSuccessStatusCode)
+        {
+            var result = response.Content.ReadAsStringAsync();
+            var data = JsonConvert.DeserializeObject<dynamic>(result.Result);
+            var doc = new HtmlDocument();
+            var html = data.html.ToString()
+                .Replace("\n", string.Empty)
+                .Replace("\r", string.Empty)
+                .Replace("\t", string.Empty);
+
+            doc.LoadHtml(html);
+            var nodes = doc.DocumentNode.SelectNodes("//*[contains(@class,'wpem-event-infomation')]");
+            foreach (HtmlNode node in nodes)
+            {
+                var date = node.SelectNodes("//*[contains(@class,'wpem-event-infomation')]");
+                var title = node.FirstChild.ChildNodes;
+                var location = node.FirstChild.ChildNodes;
+            }
+        }
+
+        var Result = new List<ScholarModel>();
         return new JsonResult(Result);
     }
 

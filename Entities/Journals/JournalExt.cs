@@ -16,17 +16,17 @@ public static class JournalExt
 
     public static IQueryable<Journal> FilterByIssn(this IQueryable<Journal> items, string issn)
     {
-        return items.Filter(issn, i => i.Issn == issn);
+        return items.Filter(issn, i => i.Issn.Trim().Equals(issn.Trim()));
     }
 
     public static IQueryable<Journal> FilterByEIssn(this IQueryable<Journal> items, string eIssn)
     {
-        return items.Filter(eIssn, i => i.EIssn == eIssn);
+        return items.Filter(eIssn, i => i.EIssn.Trim().Equals(eIssn.Trim()));
     }
 
     public static IQueryable<Journal> FilterByTitle(this IQueryable<Journal> items, string title)
     {
-        return items.Filter(title, i => i.Title.Trim().ToLower() == title.Trim().ToLower());
+        return items.Filter(title, i => i.Title.Trim().ToLower().Equals(title.Trim().ToLower()));
     }
 
     public static IQueryable<Journal> FilterByIndex(this IQueryable<Journal> items, JournalIndex? index)
