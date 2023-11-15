@@ -221,8 +221,9 @@ public class ArticleController : ApplicationController
         {
             return new JsonResult("journal not found");
         }
-
-        var bestIf = items.OrderBy(i => i.Index)
+        
+        var bestIf = items.OrderByDescending(i => i.Year)
+            .ThenByDescending(i => i.Index)
             .ThenByDescending(i => i.If)
             .Select(i => new BestInfoDetailModel
             {
@@ -233,7 +234,8 @@ public class ArticleController : ApplicationController
                 Category = i.Category
             }).FirstOrDefault();
 
-        var bestRank = items.OrderByDescending(i => i.QRank)
+        var bestRank = items.OrderByDescending(i => i.Year)
+            .ThenByDescending(i => i.QRank)
             .Select(i => new BestInfoDetailModel
             {
                 Rank = i.QRank.GetCaption(),
