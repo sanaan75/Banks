@@ -1,10 +1,12 @@
 ﻿using System.Net.Http.Headers;
 using Entities.Journals;
-using Entities.Models;
+using Entities.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using UseCases.Interfaces;
+using Web.Models;
+using ArticleModel = Entities.Models.ArticleModel;
 
 namespace Banks.Controllers;
 
@@ -204,5 +206,43 @@ public class ArticleController : ApplicationController
             default:
                 return BadRequest();
         }
+    }
+
+    [Route("GetBestInfo")]
+    [HttpGet]
+    public JsonResult GetRecords(int year, string? journalTitle, string? issn)
+    {
+        var items = _db.Query<JournalRecord>().Where(i => i.Year < year);
+        if (string.IsNullOrEmpty(journalTitle) == false)
+            items = items.Where(i => i.Journal.Title.Trim().ToLower().Equals(journalTitle.Trim().ToLower()));
+        else if (string.IsNullOrEmpty(issn) == false)
+            items = items.Where(i => i.Journal.Issn.Trim().ToLower().Equals(issn.Trim().ToLower()));
+        else
+        {
+            return new JsonResult("journal not found");
+        }
+
+        var bestIf = items.OrderBy(i => i.Index)
+            .ThenByDescending(i => i.If)
+            .Select(i => new BestInfoDetailModel
+            {
+                Rank = i.QRank.GetCaption(),
+                If = i.If,
+                Mif = i.Mif,
+                Index = i.Index.GetCaption(),
+                Category = i.Category
+            }).FirstOrDefault();
+
+        var bestRank = items.OrderByDescending(i => i.QRank)
+            .Select(i => new BestInfoDetailModel
+            {
+                Rank = i.QRank.GetCaption(),
+                If = i.If,
+                Mif = i.Mif,
+                Index = i.Index.GetCaption(),
+                Category = i.Category
+            }).FirstOrDefault();
+
+        return new JsonResult(new BestInfoModel() { BestIf = bestIf, BestRank = bestRank });
     }
 }
