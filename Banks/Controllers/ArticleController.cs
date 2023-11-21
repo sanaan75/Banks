@@ -210,7 +210,7 @@ public class ArticleController : ApplicationController
 
     [Route("GetBestInfo")]
     [HttpGet]
-    public JsonResult GetRecords(int year, string? journalTitle, string? issn)
+    public JsonResult GetBestInfo(int year, string? journalTitle, string? issn)
     {
         var items = _db.Query<JournalRecord>().Where(i => i.Year < year);
         if (string.IsNullOrEmpty(journalTitle) == false)
@@ -221,9 +221,8 @@ public class ArticleController : ApplicationController
         {
             return new JsonResult("journal not found");
         }
-        
+
         var bestIf = items.OrderByDescending(i => i.Year)
-            .ThenByDescending(i => i.Index)
             .ThenByDescending(i => i.If)
             .Select(i => new BestInfoDetailModel
             {
@@ -235,7 +234,8 @@ public class ArticleController : ApplicationController
             }).FirstOrDefault();
 
         var bestRank = items.OrderByDescending(i => i.Year)
-            .ThenByDescending(i => i.QRank)
+            .ThenBy(i => i.QRank)
+            .Where(i => i.QRank != null)
             .Select(i => new BestInfoDetailModel
             {
                 Rank = i.QRank.GetCaption(),
@@ -245,6 +245,90 @@ public class ArticleController : ApplicationController
                 Category = i.Category
             }).FirstOrDefault();
 
-        return new JsonResult(new BestInfoModel() { BestIf = bestIf, BestRank = bestRank });
+        var bestIndex = items.OrderByDescending(i => i.Year)
+            .ThenBy(i => i.Index)
+            .Where(i => i.Index != null)
+            .Select(i => new BestInfoDetailModel
+            {
+                Rank = i.QRank.GetCaption(),
+                If = i.If,
+                Mif = i.Mif,
+                Index = i.Index.GetCaption(),
+                Category = i.Category
+            }).FirstOrDefault();
+
+        var list = items
+            .OrderByDescending(i => i.Year)
+            .ThenBy(i => i.QRank)
+            .ThenBy(i => i.Index)
+            .Where(i => i.Index != null);
+
+        var bestReward =
+            SortForReward(list)
+                .OrderBy(m => m.Value)
+                .Select(i => new BestInfoDetailModel
+                {
+                    Rank = i.Rank.GetCaption(),
+                    If = i.If,
+                    Mif = i.Mif,
+                    Index = i.Index.GetCaption(),
+                    Category = i.Category
+                }).FirstOrDefault();
+
+        return new JsonResult(new BestInfoModel()
+            { BestIf = bestIf, BestRank = bestRank, BestIndex = bestIndex, BestReward = bestReward });
+    }
+
+    private List<BestRewardModel> SortForReward(IQueryable<JournalRecord> records)
+    {
+        List<BestRewardModel> list = new List<BestRewardModel>();
+        foreach (var record in records)
+        {
+            var item = new BestRewardModel
+            {
+                Category = record.Category,
+                Index = record.Index,
+                Rank = record.QRank,
+                If = record.If,
+                Mif = record.Mif,
+                Year = record.Year
+            };
+            switch (record.Index)
+            {
+                case JournalIndex.JCR:
+                {
+                    item.Value = record.QRank switch
+                    {
+                        JournalQRank.Q1 => 1,
+                        JournalQRank.Q2 => 2,
+                        JournalQRank.Q3 => 5,
+                        JournalQRank.Q4 => 7,
+                        _ => 9
+                    };
+                    break;
+                }
+                case JournalIndex.Scopus:
+                {
+                    item.Value = record.QRank switch
+                    {
+                        JournalQRank.Q1 => 3,
+                        JournalQRank.Q2 => 4,
+                        JournalQRank.Q3 => 6,
+                        JournalQRank.Q4 => 8,
+                        _ => 9
+                    };
+                    break;
+                }
+                default:
+                {
+                    item.Value = 9;
+                    break;
+                }
+            }
+
+            list.Add(item);
+        }
+
+        return list;
     }
 }
