@@ -1,5 +1,6 @@
 using Entities.Journals;
 using Entities.Utilities;
+using UseCases.Journals;
 
 namespace Web.Models
 {
@@ -25,6 +26,6 @@ namespace Web.Models
         public decimal? Mif { get; set; }
         public JournalQRank? QRank { get; set; }
         public string QRankCaption => QRank.GetCaption();
-        public BestInfoModel BestInfo { get; set; }
+        public IGetBestJournalInfo.BestInfoModel BestInfo { get; set; }
     }
 }

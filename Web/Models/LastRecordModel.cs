@@ -1,4 +1,5 @@
 using Entities.Journals;
+using UseCases.Journals;
 
 namespace Web.Models
 {
@@ -15,5 +16,6 @@ namespace Web.Models
         public string? EIssn { get; set; }
         public JournalQRank? QRank { get; set; }
         public string JournalType { get; set; }
+        public IGetBestJournalInfo.BestInfoModel BestInfo { get; set; }
     }
 }

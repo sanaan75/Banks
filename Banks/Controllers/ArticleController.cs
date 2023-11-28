@@ -1,10 +1,10 @@
 ﻿using System.Net.Http.Headers;
 using Entities.Journals;
-using Entities.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using UseCases.Interfaces;
+using UseCases.Journals;
 using Web.Models;
 
 namespace Banks.Controllers;
@@ -15,10 +15,12 @@ namespace Banks.Controllers;
 public class ArticleController : ApplicationController
 {
     private readonly IDb _db;
+    private readonly IGetBestJournalInfo _getBestJournalInfo;
 
-    public ArticleController(IDb db)
+    public ArticleController(IDb db, IGetBestJournalInfo getBestJournalInfo)
     {
         _db = db;
+        _getBestJournalInfo = getBestJournalInfo;
     }
 
     [Route("GetByDoi")]
@@ -58,7 +60,7 @@ public class ArticleController : ApplicationController
             var publisher = data["message"]["publisher"];
             var language = data["message"]["language"];
             var year = 0;
-            
+
             if (data["message"]["published"]["date-parts"][0] != null)
             {
                 foreach (int item in data["message"]["published"]["date-parts"][0]) dateList.Add(item);
@@ -174,11 +176,8 @@ public class ArticleController : ApplicationController
                 items = items.Where(i => i.Journal.Title.Trim().ToLower().Equals(journalTitle.Trim().ToLower()));
             else if (string.IsNullOrEmpty(issn) == false)
                 items = items.Where(i => i.Journal.Issn.Trim().ToLower().Equals(issn.Trim().ToLower()));
-            else
-            {
-                return new JsonResult("journal not found");
-            }
-            
+
+
             var result = new ArticleModel
             {
                 Title = title,
@@ -199,7 +198,7 @@ public class ArticleController : ApplicationController
                 Index = Index,
                 Mif = Mif,
                 QRank = qRank,
-                BestInfo = GetBestInfo(items)
+                BestInfo = _getBestJournalInfo.Respond(items)
             };
 
             client.Dispose();
@@ -233,119 +232,6 @@ public class ArticleController : ApplicationController
             return new JsonResult("journal not found");
         }
 
-        return new JsonResult(GetBestInfo(items));
-    }
-
-
-    private BestInfoModel GetBestInfo(IQueryable<JournalRecord> items)
-    {
-        var bestIf = items.OrderByDescending(i => i.Year)
-            .ThenByDescending(i => i.If)
-            .Select(i => new BestInfoDetailModel
-            {
-                Rank = i.QRank.GetCaption(),
-                If = i.If,
-                Mif = i.Mif,
-                Index = i.Index.GetCaption(),
-                Category = i.Category
-            }).FirstOrDefault();
-
-        var bestRank = items.OrderByDescending(i => i.Year)
-            .ThenBy(i => i.QRank)
-            .Where(i => i.QRank != null)
-            .Select(i => new BestInfoDetailModel
-            {
-                Rank = i.QRank.GetCaption(),
-                If = i.If,
-                Mif = i.Mif,
-                Index = i.Index.GetCaption(),
-                Category = i.Category
-            }).FirstOrDefault();
-
-        var bestIndex = items.OrderByDescending(i => i.Year)
-            .ThenBy(i => i.Index)
-            .Where(i => i.Index != null)
-            .Select(i => new BestInfoDetailModel
-            {
-                Rank = i.QRank.GetCaption(),
-                If = i.If,
-                Mif = i.Mif,
-                Index = i.Index.GetCaption(),
-                Category = i.Category
-            }).FirstOrDefault();
-
-        var list = items
-            .OrderByDescending(i => i.Year)
-            .ThenBy(i => i.QRank)
-            .ThenBy(i => i.Index)
-            .Where(i => i.Index != null);
-
-        var bestReward =
-            SortForReward(list)
-                .OrderBy(m => m.Value)
-                .Select(i => new BestInfoDetailModel
-                {
-                    Rank = i.Rank.GetCaption(),
-                    If = i.If,
-                    Mif = i.Mif,
-                    Index = i.Index.GetCaption(),
-                    Category = i.Category
-                }).FirstOrDefault();
-
-        return new BestInfoModel
-            { BestIf = bestIf, BestRank = bestRank, BestIndex = bestIndex, BestReward = bestReward };
-    }
-
-    private List<BestRewardModel> SortForReward(IQueryable<JournalRecord> records)
-    {
-        List<BestRewardModel> list = new List<BestRewardModel>();
-        foreach (var record in records)
-        {
-            var item = new BestRewardModel
-            {
-                Category = record.Category,
-                Index = record.Index,
-                Rank = record.QRank,
-                If = record.If,
-                Mif = record.Mif,
-                Year = record.Year
-            };
-            switch (record.Index)
-            {
-                case JournalIndex.JCR:
-                {
-                    item.Value = record.QRank switch
-                    {
-                        JournalQRank.Q1 => 1,
-                        JournalQRank.Q2 => 2,
-                        JournalQRank.Q3 => 5,
-                        JournalQRank.Q4 => 7,
-                        _ => 9
-                    };
-                    break;
-                }
-                case JournalIndex.Scopus:
-                {
-                    item.Value = record.QRank switch
-                    {
-                        JournalQRank.Q1 => 3,
-                        JournalQRank.Q2 => 4,
-                        JournalQRank.Q3 => 6,
-                        JournalQRank.Q4 => 8,
-                        _ => 9
-                    };
-                    break;
-                }
-                default:
-                {
-                    item.Value = 9;
-                    break;
-                }
-            }
-
-            list.Add(item);
-        }
-
-        return list;
+        return new JsonResult(_getBestJournalInfo.Respond(items));
     }
 }

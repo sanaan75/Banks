@@ -14,12 +14,15 @@ public class JournalController : ApplicationController
     private readonly IDb _db;
     private readonly IFindJournal _findJournal;
     private readonly IIsJournalBlackList _isJournalBlackList;
+    private readonly IGetBestJournalInfo _getBestJournalInfo;
+
     
-    public JournalController(IFindJournal findJournal, IDb db, IIsJournalBlackList isJournalBlackList)
+    public JournalController(IFindJournal findJournal, IDb db, IIsJournalBlackList isJournalBlackList, IGetBestJournalInfo getBestJournalInfo)
     {
         _findJournal = findJournal;
         _db = db;
         _isJournalBlackList = isJournalBlackList;
+        _getBestJournalInfo = getBestJournalInfo;
     }
 
     [Route("GetRecords")]
@@ -44,11 +47,11 @@ public class JournalController : ApplicationController
         try
         {
             var items = _db.Query<JournalRecord>().Where(i => i.Year < year).FilterByJournalTitle(title);
-            var cc = items.ToList();
+            
             if (items.Any())
             {
-                items = items.OrderByDescending(i => i.Year).ThenBy(i => i.QRank);
-                var result = items.Select(i => new LastRecordModel
+                var data = items.OrderByDescending(i => i.Year).ThenBy(i => i.QRank);
+                var result = data.Select(i => new LastRecordModel
                 {
                     Category = i.Category,
                     IF = i.If as double?,
@@ -60,7 +63,8 @@ public class JournalController : ApplicationController
                     EIssn = i.Journal.EIssn,
                     Year = i.Year,
                     QRank = i.QRank,
-                    JournalType = i.Type!.GetCaption()
+                    JournalType = i.Type!.GetCaption(),
+                    BestInfo = _getBestJournalInfo.Respond(items.Where(i => i.Journal.Title.Trim().ToLower().Equals(title.Trim().ToLower())))
                 }).FirstOrDefault();
                 return Ok(result);
             }
