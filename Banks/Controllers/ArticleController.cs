@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using UseCases.Interfaces;
 using Web.Models;
-using ArticleModel = Entities.Models.ArticleModel;
 
 namespace Banks.Controllers;
 
@@ -58,12 +57,13 @@ public class ArticleController : ApplicationController
             var page = data["message"]["page"];
             var publisher = data["message"]["publisher"];
             var language = data["message"]["language"];
-
+            var year = 0;
+            
             if (data["message"]["published"]["date-parts"][0] != null)
             {
                 foreach (int item in data["message"]["published"]["date-parts"][0]) dateList.Add(item);
 
-                var year = dateList[0];
+                year = dateList[0];
                 var month = 1;
                 var day = dateList.Count();
 
@@ -169,6 +169,16 @@ public class ArticleController : ApplicationController
                 }
             }
 
+            var items = _db.Query<JournalRecord>().Where(i => i.Year < year);
+            if (string.IsNullOrEmpty(journalTitle) == false)
+                items = items.Where(i => i.Journal.Title.Trim().ToLower().Equals(journalTitle.Trim().ToLower()));
+            else if (string.IsNullOrEmpty(issn) == false)
+                items = items.Where(i => i.Journal.Issn.Trim().ToLower().Equals(issn.Trim().ToLower()));
+            else
+            {
+                return new JsonResult("journal not found");
+            }
+            
             var result = new ArticleModel
             {
                 Title = title,
@@ -188,7 +198,8 @@ public class ArticleController : ApplicationController
                 IF = IF,
                 Index = Index,
                 Mif = Mif,
-                QRank = qRank
+                QRank = qRank,
+                BestInfo = GetBestInfo(items)
             };
 
             client.Dispose();
@@ -222,6 +233,12 @@ public class ArticleController : ApplicationController
             return new JsonResult("journal not found");
         }
 
+        return new JsonResult(GetBestInfo(items));
+    }
+
+
+    private BestInfoModel GetBestInfo(IQueryable<JournalRecord> items)
+    {
         var bestIf = items.OrderByDescending(i => i.Year)
             .ThenByDescending(i => i.If)
             .Select(i => new BestInfoDetailModel
@@ -275,8 +292,8 @@ public class ArticleController : ApplicationController
                     Category = i.Category
                 }).FirstOrDefault();
 
-        return new JsonResult(new BestInfoModel()
-            { BestIf = bestIf, BestRank = bestRank, BestIndex = bestIndex, BestReward = bestReward });
+        return new BestInfoModel
+            { BestIf = bestIf, BestRank = bestRank, BestIndex = bestIndex, BestReward = bestReward };
     }
 
     private List<BestRewardModel> SortForReward(IQueryable<JournalRecord> records)
