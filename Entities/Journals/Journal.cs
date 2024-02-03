@@ -1,6 +1,4 @@
-﻿using Entities.Users;
-
-namespace Entities.Journals;
+﻿namespace Entities.Journals;
 
 public class Journal : IEntity
 {
@@ -11,12 +9,6 @@ public class Journal : IEntity
     public string? WebSite { get; set; }
     public string? Publisher { get; set; }
     public string? Country { get; set; }
-    public DateTime? CreateDate { get; set; }
-    public int? CreatorId { get; set; }
-    public User Creator { get; set; }
-    public DateTime? LastUpdateDate { get; set; }
-    public int? LastUpdaterId { get; set; }
-    public User LastUpdater { get; set; }
     public ICollection<JournalRecord> Records { get; set; }
     public ICollection<BlackList> BlackLists { get; set; }
 }

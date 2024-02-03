@@ -1,6 +1,4 @@
-﻿using Entities.Users;
-
-namespace Entities.Journals;
+﻿namespace Entities.Journals;
 
 public class JournalRecord : IEntity
 {
@@ -17,10 +15,6 @@ public class JournalRecord : IEntity
     public decimal? If { get; set; }
     public decimal? Mif { get; set; }
     public decimal? Aif { get; set; }
-    public DateTime CreateDate { get; set; }
-    public int CreatorId { get; set; }
-    public User Creator { get; set; }
-    public DateTime? LastUpdateDate { get; set; }
-    public int? LastUpdaterId { get; set; }
-    public User LastUpdater { get; set; }
+
+    public JournalSource? Source { get; set; }
 }

@@ -3,7 +3,6 @@ using Entities.Journals;
 using Entities.Models;
 using Entities.Utilities;
 using Microsoft.AspNetCore.Mvc;
-using UseCases;
 using UseCases.Interfaces;
 using UseCases.Journals;
 using Web.RazorPages;
@@ -13,18 +12,11 @@ namespace Banks.Pages._App.Journals;
 [RequestFormLimits(MultipartBodyLengthLimit = 1048576000)]
 public class ImportExcel : AppPageModel
 {
-    private readonly IAddJournal _addJournal;
-    private readonly IAddJournalRecord _addJournalRecord;
     private readonly IDb _db;
-    private IExcelFileReader _excelFileReader;
 
-    public ImportExcel(IDb db, IExcelFileReader excelFileReader, IAddJournalRecord addJournalRecord,
-        IAddJournal addJournal)
+    public ImportExcel(IDb db)
     {
         _db = db;
-        _excelFileReader = excelFileReader;
-        _addJournalRecord = addJournalRecord;
-        _addJournal = addJournal;
         Indexes = EnumExt.GetList<JournalIndex>();
     }
 
@@ -49,7 +41,7 @@ public class ImportExcel : AppPageModel
                     var worksheet = wbook.Worksheet(1);
 
                     var journals = _db.Query<Journal>()
-                        .Select(i => new { i.Id, Title = i.Title.Trim().ToLower() });
+                        .Select(i => new { Id = i.Id, i.Title }).ToList();
 
                     foreach (var row in worksheet.Rows())
                     {
@@ -100,34 +92,43 @@ public class ImportExcel : AppPageModel
                                 };
 
                                 var journal = journals.FirstOrDefault(i =>
-                                    i.Title == model.JournalName.Trim().ToLower());
+                                    i.Title.Trim().ToLower() == model.JournalName.Trim().ToLower());
 
                                 if (journal != null)
                                 {
-                                    var dup = _db.Query<JournalRecord>().FilterByJournal(journal.Id)
-                                        .FilterByCategory(model.Category).FilterByYear(model.Year).Any();
+                                    // var dup = _db.Query<JournalRecord>()
+                                    //     .FilterByYear(model.Year)
+                                    //     .FilterByJournal(journal.Id)
+                                    //     .FilterByCategory(model.Category)
+                                    //     .Count();
 
-                                    if (dup == false)
-                                        _addJournalRecord.Respond(new IAddJournalRecord.Request
-                                        {
-                                            JournalId = journal.Id,
-                                            Category = model.Category,
-                                            If = model.IF,
-                                            Year = model.Year,
-                                            Index = model.Index,
-                                            QRank = model.Rank
-                                        });
+                                    // if (dup < 1)
+                                    _db.Set<JournalRecord>().Add(new JournalRecord
+                                    {
+                                        JournalId = journal.Id,
+                                        Year = model.Year,
+                                        Index = model.Index,
+                                        Type = null,
+                                        Value = null,
+                                        IscClass = null,
+                                        QRank = model.Rank,
+                                        If = model.IF,
+                                        Category = model.Category,
+                                        Mif = null,
+                                        Aif = null,
+                                        Source = JournalSource.SJR
+                                    });
                                 }
                                 else
                                 {
-                                    var newJournal = _addJournal.Responce(new IAddJournal.Request
+                                    var newJournal = _db.Set<Journal>().Add(new Journal
                                     {
                                         Title = model.JournalName,
                                         Issn = model.ISSN,
                                         EIssn = model.EISSN,
                                         Country = model.Country,
                                         Publisher = model.Publisher
-                                    });
+                                    }).Entity;
 
                                     _db.Set<JournalRecord>().Add(new JournalRecord
                                     {
@@ -142,13 +143,12 @@ public class ImportExcel : AppPageModel
                                         Category = model.Category,
                                         Mif = null,
                                         Aif = null,
-                                        CreatorId = 1, //_actorService.UserId,
-                                        CreateDate = DateTime.UtcNow
+                                        Source = JournalSource.SJR
                                     });
                                 }
-
-                                _db.Save();
                             }
+
+                            _db.Save();
                         }
                     }
                 }
@@ -157,11 +157,12 @@ public class ImportExcel : AppPageModel
             {
                 ErrorMessage = "عملیات با خطا مواجه شد" + ex.Message;
             }
+
         else
             ErrorMessage = "لطفا مقادیر خواسته شده را تکمیل نمایید.";
 
         SuccessMessage = "با موفقیت اپدیت شد";
-        return Page();
+        return RedirectToPage();
     }
 
     private List<CategoryModel> GetCategories(string categories)
@@ -206,6 +207,13 @@ public class ImportExcel : AppPageModel
             default:
                 return null;
         }
+    }
+
+    public class RecordModel
+    {
+        public int JournalId { get; set; }
+        public string Category { get; set; }
+        public int Year { get; set; }
     }
 
     public class DataItem

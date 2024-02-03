@@ -149,9 +149,7 @@ public class Vezaratain : AppPageModel
             Index = JournalIndex.Vezaratin,
             Type = JournalType.ElmiPazhuheshi,
             Year = year,
-            Value = value,
-            CreatorId = 1,
-            CreateDate = DateTime.Now
+            Value = value
         });
     }
 }

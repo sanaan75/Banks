@@ -45,8 +45,7 @@ public class AddJournalRecord : IAddJournalRecord
             Category = category,
             Mif = request.Mif,
             Aif = request.Aif,
-            CreatorId = _actorService.UserId,
-            CreateDate = DateTime.UtcNow
+            Source = request.Source
         }).Entity;
     }
 }

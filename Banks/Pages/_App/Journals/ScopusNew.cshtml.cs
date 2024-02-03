@@ -112,9 +112,7 @@ public class ScopusNew : AppPageModel
                                     Index = JournalIndex.Scopus,
                                     Type = JournalType.ElmiPazhuheshi,
                                     QRank = GetRank(_rank.ToUpper()),
-                                    Year = readModel.Year,
-                                    CreatorId = 1,
-                                    CreateDate = DateTime.Now
+                                    Year = readModel.Year
                                 });
                             }
 
@@ -142,9 +140,7 @@ public class ScopusNew : AppPageModel
                                     Index = JournalIndex.Scopus,
                                     Type = JournalType.ElmiPazhuheshi,
                                     QRank = GetRank(_rank.ToUpper()),
-                                    Year = readModel.Year,
-                                    CreatorId = 1,
-                                    CreateDate = DateTime.Now
+                                    Year = readModel.Year
                                 });
                             }
 
@@ -172,9 +168,7 @@ public class ScopusNew : AppPageModel
                                     Index = JournalIndex.Scopus,
                                     Type = JournalType.ElmiPazhuheshi,
                                     QRank = GetRank(_rank.ToUpper()),
-                                    Year = readModel.Year,
-                                    CreatorId = 1,
-                                    CreateDate = DateTime.Now
+                                    Year = readModel.Year
                                 });
                             }
 
@@ -202,9 +196,7 @@ public class ScopusNew : AppPageModel
                                     Index = JournalIndex.Scopus,
                                     Type = JournalType.ElmiPazhuheshi,
                                     QRank = GetRank(_rank.ToUpper()),
-                                    Year = readModel.Year,
-                                    CreatorId = 1,
-                                    CreateDate = DateTime.Now
+                                    Year = readModel.Year
                                 });
                             }
 
@@ -232,9 +224,7 @@ public class ScopusNew : AppPageModel
                                     Index = JournalIndex.Scopus,
                                     Type = JournalType.ElmiPazhuheshi,
                                     QRank = GetRank(_rank.ToUpper()),
-                                    Year = readModel.Year,
-                                    CreatorId = 1,
-                                    CreateDate = DateTime.Now
+                                    Year = readModel.Year
                                 });
                             }
                         }

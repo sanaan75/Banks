@@ -19,5 +19,6 @@ public interface IAddJournalRecord
         public string Category { get; set; }
         public decimal? Mif { get; set; }
         public decimal? Aif { get; set; }
+        public JournalSource? Source { get; set; }
     }
 }

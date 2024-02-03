@@ -95,9 +95,7 @@ public class UpdateByYear : AppPageModel
                                         If = item.IF,
                                         Category = category,
                                         Mif = null,
-                                        Aif = null,
-                                        CreatorId = 1,
-                                        CreateDate = DateTime.UtcNow
+                                        Aif = null
                                     });
                                 }
 
@@ -128,9 +126,7 @@ public class UpdateByYear : AppPageModel
                                     If = item.IF,
                                     Category = category,
                                     Mif = null,
-                                    Aif = null,
-                                    CreatorId = 1,
-                                    CreateDate = DateTime.UtcNow
+                                    Aif = null
                                 });
                                 _db.Save();
 

@@ -43,6 +43,42 @@ public class ExternalController : ApplicationController
         return new JsonResult(Result);
     }
 
+    [Route("ReadFromSJR")]
+    [HttpGet]
+    public JsonResult ReadFromSJR(string issn)
+    {
+        var Result = new List<ScholarModel>();
+        IEnumerable<HtmlNode> allNodes = new List<HtmlNode>();
+
+        var url = "https://www.scimagojr.com/journalsearch.php?q=" + issn;
+        var doc = web.Load(url);
+
+        HtmlNode aNode = doc.DocumentNode.SelectSingleNode("//a[span[@class='jrnlname']]");
+
+        if (aNode == null)
+            return new JsonResult(Result);
+
+        string link = aNode.GetAttributeValue("href", "");
+        var journal_doc = web.Load(link);
+        HtmlNodeCollection trNodes = journal_doc.DocumentNode.SelectNodes("//div[@class='cellslide']/table/tbody/tr");
+
+        if (trNodes != null && trNodes.Any())
+        {
+            foreach (HtmlNode trNode in trNodes)
+            {
+                HtmlNodeCollection tdNodes = trNode.SelectNodes("td");
+
+                if (tdNodes != null)
+                {
+                    string category = tdNodes[0].InnerText.Trim();
+                    string year = tdNodes[1].InnerText.Trim();
+                    string quartile = tdNodes[2].InnerText.Trim();
+                }
+            }
+        }
+        
+        return new JsonResult(Result);
+    }
 
     [Route("Conferences")]
     [HttpGet]

@@ -102,8 +102,6 @@ public class Scopus : AppPageModel
                                     Type = JournalType.ElmiPazhuheshi,
                                     QRank = GetRank(_rank.ToUpper()),
                                     Year = readModel.Year,
-                                    CreatorId = 1,
-                                    CreateDate = DateTime.Now
                                 });
                             }
                         }
