@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Entities.Utilities;
 
@@ -35,5 +36,21 @@ public static class StringExt
     public static byte[] ToUtf8Bytes(this string str)
     {
         return new UTF8Encoding().GetBytes(str);
+    }
+
+    public static string VacuumString(this string input)
+    {
+        string noWhitespace = Regex.Replace(input, @"\s+", "");
+        return noWhitespace.Trim().ToLower();
+    }
+
+    public static string CleanCategory(this string issn)
+    {
+        return issn.Trim().ToLower();
+    }
+
+    public static string CleanIssn(this string issn)
+    {
+        return issn != null ? issn.Trim().Replace("-", String.Empty).ToUpper() : String.Empty;
     }
 }

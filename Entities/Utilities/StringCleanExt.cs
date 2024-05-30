@@ -92,4 +92,10 @@ public static class StringCleanExt
         text = text.Replace('9', '۹');
         return text;
     }
+
+    // public static string VacuumString(this string input)
+    // {
+    //     string noWhitespace = Regex.Replace(input, @"\s+", "");
+    //     return noWhitespace.Trim().ToLower();
+    // }
 }

@@ -16,13 +16,30 @@ public class JournalController : ApplicationController
     private readonly IIsJournalBlackList _isJournalBlackList;
     private readonly IGetBestJournalInfo _getBestJournalInfo;
 
-    
-    public JournalController(IFindJournal findJournal, IDb db, IIsJournalBlackList isJournalBlackList, IGetBestJournalInfo getBestJournalInfo)
+
+    public JournalController(IFindJournal findJournal, IDb db, IIsJournalBlackList isJournalBlackList,
+        IGetBestJournalInfo getBestJournalInfo)
     {
         _findJournal = findJournal;
         _db = db;
         _isJournalBlackList = isJournalBlackList;
         _getBestJournalInfo = getBestJournalInfo;
+    }
+
+    [Route("FindByTitle")]
+    [HttpGet]
+    public IActionResult FindByTitle(string title)
+    {
+        try
+        {
+            var vacuumedTitle = title.VacuumString();
+            var items = _db.Query<Journal>().FilterByTitle(vacuumedTitle);
+            return Ok(items.ToList());
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [Route("GetRecords")]
@@ -38,43 +55,6 @@ public class JournalController : ApplicationController
         });
 
         return new JsonResult(recordsList);
-    }
-
-    [Route("FindByTitle")]
-    [HttpGet]
-    public IActionResult FindByTitle(string title, int year)
-    {
-        try
-        {
-            var items = _db.Query<JournalRecord>().Where(i => i.Year < year).FilterByJournalTitle(title);
-            
-            if (items.Any())
-            {
-                var data = items.OrderByDescending(i => i.Year).ThenBy(i => i.QRank);
-                var result = data.Select(i => new LastRecordModel
-                {
-                    Category = i.Category,
-                    IF = i.If as double?,
-                    AIF = i.Aif as double?,
-                    MIF = i.Mif as double?,
-                    Index = i.Index.GetCaption(),
-                    Issn = i.Journal.Issn,
-                    Publisher = i.Journal.Publisher,
-                    EIssn = i.Journal.EIssn,
-                    Year = i.Year,
-                    QRank = i.QRank,
-                    JournalType = i.Type!.GetCaption(),
-                    BestInfo = _getBestJournalInfo.Respond(items.Where(i => i.Journal.Title.Trim().ToLower().Equals(title.Trim().ToLower())))
-                }).FirstOrDefault();
-                return Ok(result);
-            }
-
-            return NotFound();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
     }
 
     [Route("GetFullInfo")]
@@ -94,7 +74,6 @@ public class JournalController : ApplicationController
                     Aif = i.Aif,
                     Mif = i.Mif,
                     Index = i.Index,
-                    IscClass = i.IscClass,
                     Year = i.Year,
                     QRank = i.QRank,
                     Type = i.Type,

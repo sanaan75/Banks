@@ -1,9 +1,8 @@
 ﻿using Entities.Journals;
-using Entities.Utilities;
 
 namespace UseCases.Journals;
 
-public class GetBestJournalInfo:IGetBestJournalInfo
+public class GetBestJournalInfo : IGetBestJournalInfo
 {
     public IGetBestJournalInfo.BestInfoModel Respond(IQueryable<JournalRecord> items)
     {
@@ -11,10 +10,10 @@ public class GetBestJournalInfo:IGetBestJournalInfo
             .ThenByDescending(i => i.If)
             .Select(i => new IGetBestJournalInfo.BestInfoDetailModel
             {
-                Rank = i.QRank.GetCaption(),
+                RankValue = i.QRank,
                 If = i.If,
                 Mif = i.Mif,
-                Index = i.Index.GetCaption(),
+                IndexValue = i.Index,
                 Category = i.Category
             }).FirstOrDefault();
 
@@ -23,10 +22,10 @@ public class GetBestJournalInfo:IGetBestJournalInfo
             .Where(i => i.QRank != null)
             .Select(i => new IGetBestJournalInfo.BestInfoDetailModel
             {
-                Rank = i.QRank.GetCaption(),
+                RankValue = i.QRank,
                 If = i.If,
                 Mif = i.Mif,
-                Index = i.Index.GetCaption(),
+                IndexValue = i.Index,
                 Category = i.Category
             }).FirstOrDefault();
 
@@ -35,10 +34,10 @@ public class GetBestJournalInfo:IGetBestJournalInfo
             .Where(i => i.Index != null)
             .Select(i => new IGetBestJournalInfo.BestInfoDetailModel
             {
-                Rank = i.QRank.GetCaption(),
+                RankValue = i.QRank,
                 If = i.If,
                 Mif = i.Mif,
-                Index = i.Index.GetCaption(),
+                IndexValue = i.Index,
                 Category = i.Category
             }).FirstOrDefault();
 
@@ -53,17 +52,17 @@ public class GetBestJournalInfo:IGetBestJournalInfo
                 .OrderBy(m => m.Value)
                 .Select(i => new IGetBestJournalInfo.BestInfoDetailModel
                 {
-                    Rank = i.Rank.GetCaption(),
+                    RankValue = i.Rank,
                     If = i.If,
                     Mif = i.Mif,
-                    Index = i.Index.GetCaption(),
+                    IndexValue = i.Index,
                     Category = i.Category
                 }).FirstOrDefault();
 
         return new IGetBestJournalInfo.BestInfoModel
             { BestIf = bestIf, BestRank = bestRank, BestIndex = bestIndex, BestReward = bestReward };
     }
-    
+
     public List<IGetBestJournalInfo.BestRewardModel> SortForReward(IQueryable<JournalRecord> records)
     {
         List<IGetBestJournalInfo.BestRewardModel> list = new List<IGetBestJournalInfo.BestRewardModel>();

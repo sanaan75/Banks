@@ -1,5 +1,4 @@
 using Entities;
-using Entities.Utilities.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Primitives;
@@ -31,7 +30,7 @@ public class ApplicationController : Controller
             return;
         }
         
-        if (headerValueResult!.Equals(AppSetting.Api_Key) == false)
+        if (headerValueResult.Equals(AppSetting.Api_Key) == false)
         {
             ctx.HttpContext.Response.Clear();
             ctx.HttpContext.Response.ContentType = "application/json";
@@ -39,14 +38,9 @@ public class ApplicationController : Controller
             ctx.Result = StatusCode(401,
                 new
                 {
-                    Message =
-                        $"Invalid Request"
+                    Message = "Invalid Request"
                 });
             return;
         }
-
-        // Token = HttpContext?.User?.Claims.FirstOrDefault() != null
-        //     ? HttpContext.User.Claims.First().Value
-        //     : string.Empty;
     }
 }

@@ -21,7 +21,6 @@ public class Login : ILogin
     {
         try
         {
-            var users = _db.Query<User>().ToList();
             var user = _db.Query<User>().Where(i => i.Username == username).FirstOrDefault(i => i.SysAdmin == true);
             if (user != null)
             {
@@ -30,7 +29,8 @@ public class Login : ILogin
                 {
                     var permissions = _db.Query<UserGroupPermission>()
                         .Where(i => i.UserGroupId == user.UserGroupId)
-                        .Select(i => i.Permission).ToList();
+                        .Select(i => i.Permission)
+                        .ToList();
 
                     var actor = new Actor
                     {

@@ -1,4 +1,5 @@
 ﻿using Entities.Journals;
+using Entities.Utilities;
 
 namespace UseCases.Journals;
 
@@ -19,8 +20,10 @@ public interface IGetBestJournalInfo
         public decimal? If { get; set; }
         public decimal? Mif { get; set; }
         public string Category { get; set; }
-        public string Rank { get; set; }
-        public string Index { get; set; }
+        public JournalQRank? RankValue { get; set; }
+        public string Rank => IndexValue.GetCaption();
+        public JournalIndex? IndexValue { get; set; }
+        public string Index => IndexValue.GetCaption();
     }
 
     public class BestRewardModel

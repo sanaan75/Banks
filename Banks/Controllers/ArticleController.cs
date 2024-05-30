@@ -1,5 +1,7 @@
 ﻿using System.Net.Http.Headers;
+using System.Text.Json.Serialization;
 using Entities.Journals;
+using Entities.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -18,7 +20,7 @@ public class ArticleController : ApplicationController
     private readonly IDb _db;
     private readonly IGetBestJournalInfo _getBestJournalInfo;
 
-    private static HttpClient client = new HttpClient();
+    private HttpClient client = new HttpClient();
 
     public ArticleController(IDb db, IGetBestJournalInfo getBestJournalInfo)
     {
@@ -26,9 +28,9 @@ public class ArticleController : ApplicationController
         _getBestJournalInfo = getBestJournalInfo;
     }
 
-    [Route("GetByDoi")]
+    [Route("FetchByDoi")]
     [HttpGet]
-    public IActionResult GetByDoi(string doi)
+    public IActionResult FetchByDoi(string doi)
     {
         client.BaseAddress = new Uri("https://api.crossref.org/works/" + doi);
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -37,49 +39,63 @@ public class ArticleController : ApplicationController
         if (response.IsSuccessStatusCode == false)
             return NotFound();
 
-        var str = response.Content.ReadAsStringAsync();
-        var data = JsonConvert.DeserializeObject<dynamic>(str.Result);
+        var jsonString = response.Content.ReadAsStringAsync();
+        Root root = JsonConvert.DeserializeObject<Root>(jsonString.Result);
+        var data = root.Message;
 
         var model = new ArticleModel();
 
-        if (data["message"]["title"] != null)
-            model.Title = data["message"]["title"][0];
+        if (data.Title.Any())
+            model.Title = data.Title[0];
 
-        model.Volume = data["message"]["volume"];
-        model.URL = data["message"]["URL"];
-        model.Page = data["message"]["page"];
-        model.Publisher = data["message"]["publisher"];
-        model.Language = data["message"]["language"];
+        model.Volume = data.Volume;
+        model.URL = data.Url;
+        model.Page = data.Page;
+        model.Publisher = data.Publisher;
+        model.Language = data.Language;
 
-        if (data["message"]["published"]["date-parts"][0] != null)
+        if (data.Published.DateParts is not null)
         {
             var dateList = new List<int>();
-            foreach (int item in data["message"]["published"]["date-parts"][0])
+            foreach (int item in data.Published.DateParts[0])
                 dateList.Add(item);
 
             model.DateIndexed = new DateTime(dateList[0], dateList[1], dateList[2]);
         }
 
-        model.DateCreated = data["message"]["created"]["date-time"];
-
-        if (data["message"]["container-title"] != null)
-            model.JournalTitle = data["message"]["container-title"][0];
-
-        if (data["message"]["ISSN"] != null)
-            model.ISSN = data["message"]["ISSN"][0];
-
-        model.Issue = data["message"]["issue"];
-        var member = data["message"]["member"];
-
-        if (data["message"]["author"] != null)
-            foreach (var item in data["message"]["author"])
+        if (data.Indexed.Timestamp > 0)
+        {
+            try
             {
-                string author = item["given"] + " " + item["family"];
-                model.Authors.Add(author);
+                model.DateIndexed = new DateTime(1970, 1, 1, 0, 0, 0, 0)
+                    .AddSeconds(Math.Round(data.Indexed.Timestamp / 1000d)).ToLocalTime();
+            }
+            catch (Exception e)
+            {
+            }
+        }
+
+        model.DateCreated = data.Created.DateTime;
+
+        if (data.ContainerTitle.Any())
+            model.JournalTitle = data.ContainerTitle[0].ToString();
+
+        if (data.Issn is not null)
+            model.ISSN = data.Issn[0].CleanIssn();
+
+        var member = data.Member;
+        List<string> authers = new();
+        if (data.Author is not null)
+            foreach (var item in data.Author)
+            {
+                string author = item.Given + " " + item.Family;
+                authers.Add(author);
             }
 
-        if (data["message"]["subject"] != null)
-            foreach (var item in data["message"]["subject"])
+        model.Authors = authers;
+
+        if (data.Subject is not null)
+            foreach (var item in data.Subject)
                 model.Categories.Add(item.ToString());
 
         try
@@ -107,17 +123,26 @@ public class ArticleController : ApplicationController
 
             if (string.IsNullOrWhiteSpace(model.ISSN) == false)
             {
-                var record = query.FilterByJournalISSN(model.ISSN)
+                var issn = model.ISSN.CleanIssn();
+                var record = query.FilterByJournalISSN(issn)
                     .OrderByDescending(i => i.Year)
-                    .ThenBy(i => i.QRank).ThenBy(i => i.If)
-                    .Select(i => new { i.If, i.Index, i.Mif, i.QRank })
-                    .FirstOrDefault();
+                    .ThenBy(i => i.QRank)
+                    .ThenBy(i => i.If)
+                    .Select(i => new
+                    {
+                        i.Index,
+                        i.QRank,
+                        i.If,
+                        i.Mif,
+                        i.Aif,
+                    }).FirstOrDefault();
 
                 if (record != null)
                 {
                     model.IF = record.If;
                     model.Index = record.Index;
                     model.Mif = record.Mif;
+                    model.Aif = record.Aif;
                     model.QRank = record.QRank;
                 }
             }
@@ -126,7 +151,7 @@ public class ArticleController : ApplicationController
                 query = query.FilterByJournalTitle(model.JournalTitle);
 
             if (string.IsNullOrWhiteSpace(model.ISSN) == false)
-                query = query.FilterByIssn(model.ISSN);
+                query = query.FilterByIssn(model.ISSN.CleanIssn());
 
             model.BestInfo = _getBestJournalInfo.Respond(query);
         }
@@ -139,10 +164,12 @@ public class ArticleController : ApplicationController
     public JsonResult GetBestInfo(int year, string? journalTitle, string? issn)
     {
         var items = _db.Query<JournalRecord>().Where(i => i.Year < year);
+
         if (string.IsNullOrEmpty(journalTitle) == false)
-            items = items.Where(i => i.Journal.Title.Trim().ToLower().Equals(journalTitle.Trim().ToLower()));
+            items = items.Where(i => i.Journal.NormalizedTitle.Equals(journalTitle.VacuumString()));
+
         else if (string.IsNullOrEmpty(issn) == false)
-            items = items.Where(i => i.Journal.Issn.Trim().ToLower().Equals(issn.Trim().ToLower()));
+            items = items.Where(i => i.Journal.Issn.Equals(issn.CleanIssn()));
         else
         {
             return new JsonResult("journal not found");
@@ -223,6 +250,7 @@ public class ArticleController : ApplicationController
         return new JsonResult(new ArticleInfoModel());
     }
 
+
     public class ArticleInfoModel
     {
         public string Abstract { get; set; }
@@ -254,5 +282,134 @@ public class ArticleController : ApplicationController
         public string given { get; set; }
         public string family { get; set; }
         public string sequence { get; set; }
+    }
+
+    // ----------------------------
+
+    public class Root
+    {
+        public string Status { get; set; }
+        [JsonPropertyName("message-type")] public string MessageType { get; set; }
+        [JsonPropertyName("message-version")] public string MessageVersion { get; set; }
+        public Message Message { get; set; }
+    }
+
+    public class Message
+    {
+        [JsonProperty("indexed")] public Indexed Indexed { get; set; }
+
+        [JsonProperty("publisher-location")] public string PublisherLocation { get; set; }
+
+        [JsonProperty("reference-count")] public int ReferenceCount { get; set; }
+
+        [JsonProperty("publisher")] public string Publisher { get; set; }
+
+        [JsonProperty("isbn-type")] public List<IsbnType> IsbnType { get; set; }
+
+        [JsonProperty("DOI")] public string Doi { get; set; }
+
+        [JsonProperty("type")] public string Type { get; set; }
+        [JsonProperty("created")] public Created Created { get; set; }
+        [JsonProperty("page")] public string Page { get; set; }
+
+        [JsonProperty("source")] public string Source { get; set; }
+        [JsonProperty("title")] public List<string> Title { get; set; }
+        [JsonProperty("author")] public List<JAuthor> Author { get; set; }
+        [JsonProperty("member")] public string Member { get; set; }
+
+        [JsonProperty("container-title")] public List<string> ContainerTitle { get; set; }
+
+        [JsonProperty("original-title")] public List<object> OriginalTitle { get; set; }
+
+        [JsonProperty("deposited")] public Deposited Deposited { get; set; }
+
+        [JsonProperty("subtitle")] public List<object> Subtitle { get; set; }
+
+        [JsonProperty("issued")] public PublishedOnline Issued { get; set; }
+
+        [JsonProperty("ISBN")] public List<string> Isbn { get; set; }
+
+        [JsonProperty("URL")] public string Url { get; set; }
+
+        [JsonProperty("ISSN")] public List<string> Issn { get; set; }
+
+        [JsonProperty("issn-type")] public List<IsbnType> IssnType { get; set; }
+
+        [JsonProperty("subject")] public List<object> Subject { get; set; }
+        [JsonProperty("published")] public PublishedOnline Published { get; set; }
+        public string? Volume { get; set; }
+        public string? Language { get; set; }
+    }
+
+    public class Indexed
+    {
+        [JsonPropertyName("date-parts")] public List<List<int>> DateParts { get; set; }
+        [JsonPropertyName("date-time")] public DateTime DateTime { get; set; }
+        public long Timestamp { get; set; }
+    }
+
+    public class IsbnType
+    {
+        public string Value { get; set; }
+        public string Type { get; set; }
+    }
+
+    public class ContentDomain
+    {
+        public List<object> Domain { get; set; }
+
+        [JsonPropertyName("crossmark-restriction")]
+        public bool CrossmarkRestriction { get; set; }
+    }
+
+    public class Created
+    {
+        [JsonPropertyName("date-parts")] public List<List<int>> DateParts { get; set; }
+        [JsonPropertyName("date-time")] public DateTime DateTime { get; set; }
+        public long Timestamp { get; set; }
+    }
+
+    public class JAuthor
+    {
+        public string Given { get; set; }
+        public string Family { get; set; }
+        public string Sequence { get; set; }
+        public List<object> Affiliation { get; set; }
+    }
+
+    public class PublishedOnline
+    {
+        [JsonPropertyName("date-parts")] public List<List<int>> DateParts { get; set; }
+    }
+
+    public class Deposited
+    {
+        [JsonPropertyName("date-parts")] public List<List<int>> DateParts { get; set; }
+        [JsonPropertyName("date-time")] public DateTime DateTime { get; set; }
+        public long Timestamp { get; set; }
+    }
+
+    public class Resource
+    {
+        public Primary Primary { get; set; }
+    }
+
+    public class Primary
+    {
+        public string URL { get; set; }
+    }
+
+    public class Issued
+    {
+        [JsonPropertyName("date-parts")] public List<List<int>> DateParts { get; set; }
+    }
+
+    public class Relation
+    {
+    }
+
+    public class Published
+    {
+        [JsonPropertyName("date-parts")] public List<List<int>> DateParts { get; set; }
     }
 }

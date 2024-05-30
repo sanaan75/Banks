@@ -4,7 +4,6 @@ using Entities.Models;
 using Entities.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using UseCases.Interfaces;
-using UseCases.Journals;
 using Web.RazorPages;
 
 namespace Banks.Pages._App.Journals;
@@ -29,41 +28,56 @@ public class ImportExcel : AppPageModel
 
     public IActionResult OnPost(ReadModel readModel)
     {
-        if (ModelState.IsValid)
-            try
+        if (ModelState.IsValid == false)
+        {
+            ErrorMessage = "لطفا مقادیر خواسته شده را تکمیل نمایید.";
+            return RedirectToPage();
+        }
+
+        try
+        {
+            if (readModel.FormFile.Length > 0)
             {
-                if (readModel.FormFile.Length > 0)
+                var ms = new MemoryStream();
+                readModel.FormFile.CopyTo(ms);
+                using var wbook = new XLWorkbook(ms);
+
+                var worksheet = wbook.Worksheet(1);
+
+                var journals = _db.Query<Journal>()
+                    .Select(i => new
+                    {
+                        i.Id,
+                        i.NormalizedTitle,
+                        i.Issn,
+                        i.EIssn
+                    }).ToList();
+
+                foreach (var row in worksheet.Rows())
                 {
-                    var ms = new MemoryStream();
-                    readModel.FormFile.CopyTo(ms);
-                    using var wbook = new XLWorkbook(ms);
-
-                    var worksheet = wbook.Worksheet(1);
-
-                    var journals = _db.Query<Journal>()
-                        .Select(i => new { Id = i.Id, i.Title }).ToList();
-
-                    foreach (var row in worksheet.Rows())
+                    try
                     {
                         var text = string.Empty;
                         var data = row.Cells();
                         foreach (var cell in data) text += cell.Value;
 
-                        var sampleText = text.Replace('\"', ' ');
-                        sampleText = sampleText.Replace("&amp;", "-");
-                        sampleText = sampleText.Replace("&current;", "-");
+                        var sampleText = text.Replace('\"', ' ')
+                            .Replace("&amp;", "-")
+                            .Replace("&current;", "-");
 
-                        var columns = sampleText.Split(";");
+                        var lastIndex = sampleText.LastIndexOf(')');
+                        sampleText = sampleText.Substring(0, lastIndex + 1);
 
-                        var type = columns[3].Trim();
-                        if (type.Equals("journal"))
+                        string[] columns = sampleText.Split(';');
+
+                        if (columns[3].Trim().Equals("journal"))
                         {
-                            var catText = string.Empty;
+                            List<string> catList = new();
 
-                            for (var k = 19; k < columns.Length; k++) catText += columns[k].Trim() + ";";
+                            for (int i = 22; i <= columns.Length - 1; i++)
+                                catList.Add(columns[i]);
 
-                            var categories = GetCategories(catText.Replace("\"", ""));
-                            foreach (var category in categories)
+                            foreach (var category in catList)
                             {
                                 string issn = null;
                                 string eIssn = null;
@@ -78,54 +92,61 @@ public class ImportExcel : AppPageModel
                                     if (iisnText.Length >= 16) issn = iisnText.Substring(iisnText.Length - 8, 8);
                                 }
 
+                                if (GetCategory(category) is null)
+                                    continue;
+
                                 var model = new DataItem
                                 {
                                     JournalName = columns[2].Trim().Replace("\"", ""),
-                                    ISSN = issn,
-                                    EISSN = eIssn,
+                                    ISSN = issn.CleanIssn(),
+                                    EISSN = eIssn.CleanIssn(),
                                     Year = readModel.Year,
                                     Index = readModel.Index,
-                                    Category = category.Title,
-                                    Rank = category.Rank,
-                                    Country = columns[15].Trim().Replace("\"", ""),
-                                    Publisher = columns[17].Trim().Replace("\"", "")
+                                    Category = GetCategory(category).Title,
+                                    Rank = GetCategory(category).Rank,
+                                    Country = columns[18].Trim().Replace("\"", ""),
+                                    Publisher = columns[20].Trim().Replace("\"", "")
                                 };
 
                                 var journal = journals.FirstOrDefault(i =>
-                                    i.Title.Trim().ToLower() == model.JournalName.Trim().ToLower());
+                                    i.NormalizedTitle.Equals(model.JournalName.VacuumString()) ||
+                                    i.Issn == issn.CleanIssn() || i.EIssn == model.EISSN.CleanIssn());
 
                                 if (journal != null)
                                 {
-                                    // var dup = _db.Query<JournalRecord>()
-                                    //     .FilterByYear(model.Year)
-                                    //     .FilterByJournal(journal.Id)
-                                    //     .FilterByCategory(model.Category)
-                                    //     .Count();
+                                    var historyAlreadyExists = _db.Query<JournalRecord>()
+                                        .Where(i => i.JournalId == journal.Id)
+                                        .Where(i => i.NormalizedCategory.Equals(category.VacuumString()))
+                                        .Any(i => i.Year == model.Year);
 
-                                    // if (dup < 1)
-                                    _db.Set<JournalRecord>().Add(new JournalRecord
-                                    {
-                                        JournalId = journal.Id,
-                                        Year = model.Year,
-                                        Index = model.Index,
-                                        Type = null,
-                                        Value = null,
-                                        IscClass = null,
-                                        QRank = model.Rank,
-                                        If = model.IF,
-                                        Category = model.Category,
-                                        Mif = null,
-                                        Aif = null,
-                                        Source = JournalSource.SJR
-                                    });
+                                    if (historyAlreadyExists)
+                                        continue;
+
+                                    _db.Set<JournalRecord>()
+                                        .Add(new JournalRecord
+                                        {
+                                            JournalId = journal.Id,
+                                            Year = model.Year,
+                                            Category = model.Category,
+                                            NormalizedCategory = model.Category.VacuumString(),
+                                            Index = model.Index,
+                                            QRank = model.Rank,
+                                            If = model.IF,
+                                            Source = JournalSource.SJR,
+                                            Mif = null,
+                                            Aif = null,
+                                            Type = null,
+                                            Value = null,
+                                        });
                                 }
                                 else
                                 {
                                     var newJournal = _db.Set<Journal>().Add(new Journal
                                     {
                                         Title = model.JournalName,
-                                        Issn = model.ISSN,
-                                        EIssn = model.EISSN,
+                                        NormalizedTitle = model.JournalName.VacuumString(),
+                                        Issn = model.ISSN.CleanIssn(),
+                                        EIssn = model.EISSN.CleanIssn(),
                                         Country = model.Country,
                                         Publisher = model.Publisher
                                     }).Entity;
@@ -135,61 +156,64 @@ public class ImportExcel : AppPageModel
                                         Journal = newJournal,
                                         Year = model.Year,
                                         Index = model.Index,
-                                        Type = null,
-                                        Value = null,
-                                        IscClass = null,
                                         QRank = model.Rank,
                                         If = model.IF,
                                         Category = model.Category,
+                                        NormalizedCategory = model.Category.VacuumString(),
+                                        Source = JournalSource.SJR,
                                         Mif = null,
                                         Aif = null,
-                                        Source = JournalSource.SJR
+                                        Type = null,
+                                        Value = null,
                                     });
+                                    _db.Save();
+
+                                    journals.Add(new
+                                    {
+                                        Id = newJournal.Id,
+                                        NormalizedTitle = newJournal.NormalizedTitle,
+                                        Issn = model.ISSN,
+                                        EIssn = model.EISSN
+                                    }!);
                                 }
                             }
-
-                            _db.Save();
                         }
                     }
+                    catch (Exception ex)
+                    {
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = "عملیات با خطا مواجه شد" + ex.Message;
-            }
 
-        else
-            ErrorMessage = "لطفا مقادیر خواسته شده را تکمیل نمایید.";
+                _db.Save();
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "عملیات با خطا مواجه شد" + ex.Message;
+        }
 
         SuccessMessage = "با موفقیت اپدیت شد";
         return RedirectToPage();
     }
 
-    private List<CategoryModel> GetCategories(string categories)
+    private CategoryModel? GetCategory(string category)
     {
-        var items = new List<CategoryModel>();
-        if (categories.Length > 5)
+        if (category.Length > 5)
         {
-            categories = categories.Substring(0, categories.Length - 1);
-            var list = categories.Split(";");
-            foreach (var item in list)
-            {
-                var category = item.Trim();
-                var rank = category.Substring(category.Length - 3, 2);
-                var QRank = GetQrank(rank);
+            var rank = category.Substring(category.Length - 3, 2);
+            var QRank = GetQrank(rank);
 
-                var title = rank.StartsWith("Q")
-                    ? category.Substring(0, category.Length - 4).Trim()
-                    : category;
-                items.Add(new CategoryModel
-                {
-                    Title = title,
-                    Rank = QRank
-                });
-            }
+            var title = rank.StartsWith("Q")
+                ? category.Substring(0, category.Length - 4).Trim()
+                : category;
+            return new CategoryModel
+            {
+                Title = title,
+                Rank = QRank
+            };
         }
 
-        return items;
+        return null;
     }
 
     private JournalQRank? GetQrank(string rank)
@@ -207,13 +231,6 @@ public class ImportExcel : AppPageModel
             default:
                 return null;
         }
-    }
-
-    public class RecordModel
-    {
-        public int JournalId { get; set; }
-        public string Category { get; set; }
-        public int Year { get; set; }
     }
 
     public class DataItem

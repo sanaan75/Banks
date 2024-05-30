@@ -11,9 +11,9 @@ public static class JournalRecordExt
 
     public static IQueryable<JournalRecord> FilterByJournalTitle(this IQueryable<JournalRecord> items, string title)
     {
-        return items.Filter(title, i => i.Journal.Title.Trim().ToLower().Contains(title.Trim().ToLower()));
+        return items.Filter(title, i => i.Journal.NormalizedTitle.Equals(title));
     }
-    
+
     public static IQueryable<JournalRecord> FilterByJournalISSN(this IQueryable<JournalRecord> items, string issn)
     {
         return items.Filter(issn, i => i.Journal.Issn.Contains(issn));
@@ -21,7 +21,7 @@ public static class JournalRecordExt
 
     public static IQueryable<JournalRecord> FilterByCategory(this IQueryable<JournalRecord> items, string category)
     {
-        return items.Filter(category, i => i.Category.Trim().ToLower().Contains(category.Trim().ToLower()));
+        return items.Filter(category, i => i.Category.Contains(category));
     }
 
     public static IQueryable<JournalRecord> FilterByIndex(this IQueryable<JournalRecord> items, JournalIndex? index)
@@ -31,7 +31,7 @@ public static class JournalRecordExt
 
     public static IQueryable<JournalRecord> FilterByIssn(this IQueryable<JournalRecord> items, string issn)
     {
-        return items.Filter(issn, i => i.Journal.Issn.Replace("-", "").Trim().Equals(issn.Replace("-", "").Trim()));
+        return items.Filter(issn, i => i.Journal.Issn.Equals(issn));
     }
 
     public static IQueryable<JournalRecord> FilterByJournalType(this IQueryable<JournalRecord> items,
@@ -60,7 +60,7 @@ public static class JournalRecordExt
         items = items.Filter(from, i => i.Aif >= from);
         return items.Filter(to, i => i.Aif <= to);
     }
-    
+
     public static IQueryable<JournalRecord> FilterByYear(this IQueryable<JournalRecord> items, int? from, int? to)
     {
         items = items.Filter(from, i => i.Year >= from);

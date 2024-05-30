@@ -26,7 +26,7 @@ public static class JournalExt
 
     public static IQueryable<Journal> FilterByTitle(this IQueryable<Journal> items, string title)
     {
-        return items.Filter(title, i => i.Title.Trim().ToLower().Equals(title.Trim().ToLower()));
+        return items.Filter(title, i => i.Title.Contains(title));
     }
 
     public static IQueryable<Journal> FilterByIndex(this IQueryable<Journal> items, JournalIndex? index)

@@ -39,7 +39,6 @@ public class AddJournalRecord : IAddJournalRecord
             Index = request.Index,
             Type = request.JournalType,
             Value = request.Value,
-            IscClass = request.IscClass,
             QRank = request.QRank,
             If = request.If,
             Category = category,

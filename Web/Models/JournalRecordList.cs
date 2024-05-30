@@ -6,7 +6,7 @@ namespace Web.Models
     {
         public string Category { get; set; }
         public int Year { get; set; }
-        public JournalIndex Index { get; set; }
+        public JournalIndex? Index { get; set; }
         public JournalType? Type { get; set; }
         public JournalValue? Value { get; set; }
         public JournalIscClass? IscClass { get; set; }
